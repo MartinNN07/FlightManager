@@ -1,10 +1,10 @@
 ﻿using FlightManager.Data;
 using FlightManager.Data.Models;
 using FlightManager.Services;
-using FlightManager.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FlightManager.Web.ViewModels;
 
 namespace FlightManager.Web.Controllers
 {

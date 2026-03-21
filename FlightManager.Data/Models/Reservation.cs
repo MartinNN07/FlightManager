@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using FlightManager.Data.ValidationAttributes;
-using System.Text;
 
 namespace FlightManager.Data.Models
 {
