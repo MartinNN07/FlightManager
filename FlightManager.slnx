@@ -1,3 +1,10 @@
 <Solution>
-  <Project Path="FlightManager/FlightManager.csproj" />
+  <Project Path="FlightManager.Data/FlightManager.Data.csproj" Id="194b15c9-bcca-446a-bccc-da2d28040ca3" />
+  <Project Path="FlightManager.Services/FlightManager.Services.csproj" Id="d31c49dd-1724-45ca-98ec-4d5bbfe4a716">
+    <BuildDependency Project="FlightManager.Data/FlightManager.Data.csproj" />
+  </Project>
+  <Project Path="FlightManager/FlightManager.Web.csproj">
+    <BuildDependency Project="FlightManager.Data/FlightManager.Data.csproj" />
+    <BuildDependency Project="FlightManager.Services/FlightManager.Services.csproj" />
+  </Project>
 </Solution>
