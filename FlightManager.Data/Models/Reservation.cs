@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using FlightManager.Data.ValidationAttributes;
+using FlightManager.Data.Validation;
 using System.Text;
 
 namespace FlightManager.Data.Models

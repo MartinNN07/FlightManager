@@ -1,3 +1,5 @@
+using FlightManager.Data.Models;
+
 namespace FlightManager
 {
     public class Program
@@ -31,6 +33,7 @@ namespace FlightManager
                 .WithStaticAssets();
 
             app.Run();
+
         }
     }
 }
