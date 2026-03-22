@@ -1,6 +1,6 @@
 ﻿using FlightManager.Data.Models;
 
-namespace FlightManager.Services
+namespace FlightManager.Services.Services.Interfaces
 {
     public interface IEmailService
     {

@@ -3,8 +3,9 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using FlightManager.Services.Services.Interfaces;
 
-namespace FlightManager.Services
+namespace FlightManager.Services.Services
 {
     public class EmailService : IEmailService
     {
