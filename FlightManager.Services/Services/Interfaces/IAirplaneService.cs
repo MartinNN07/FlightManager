@@ -34,7 +34,7 @@ namespace FlightManager.Services.Services.Interfaces
         /// </summary>
         /// <param name="airplane">The airplane entity containing updated information. Cannot be null.</param>
         /// <returns>A task that represents the asynchronous update operation.</returns>
-        Task UpdateAirplaneAsync(Airplane updatedAirplane);
+        Task UpdateAirplaneAsync(Airplane airplane);
 
         /// <summary>
         /// Asynchronously deletes the airplane with the specified identifier.
