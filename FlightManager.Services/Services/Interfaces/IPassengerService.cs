@@ -66,7 +66,5 @@ namespace FlightManager.Services.Services.Interfaces
         /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the
         /// passenger exists; otherwise, <see langword="false"/>.</returns>
         Task<bool> PassengerExistsAsync(int passengerId);
-
-
     }
 }
