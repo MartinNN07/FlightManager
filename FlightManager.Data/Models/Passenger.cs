@@ -1,15 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using FlightManager.Data.Validation;
+﻿using FlightManager.Data.Validation;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightManager.Data.Models
 {
-    public enum TicketType
-    {
-        Economy,
-        Business
-    }
     public class Passenger
     {
+        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Собственото име е задължително.")]
@@ -35,7 +32,7 @@ namespace FlightManager.Data.Models
         [Required(ErrorMessage = "Телефонният номер е задължителен.")]
         [Phone(ErrorMessage = "Невалиден телефонен номер.")]
         [StringLength(20)]
-        [Display(Name = "Телефон")]
+        [Display(Name = "Телефонен номер")]
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Националността на пътника е задължителна.")]
@@ -43,10 +40,8 @@ namespace FlightManager.Data.Models
         [Display(Name = "Националността на пътника")]
         public string Nationality { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Типът билет е задължителен.")]
-        [Display(Name = "Тип на билета")]
-        public TicketType TicketType { get; set; }
-
+        [Required]
+        [ForeignKey(nameof(Reservation))]
         public int ReservationId { get; set; }
         public Reservation? Reservation { get; set; }
     }

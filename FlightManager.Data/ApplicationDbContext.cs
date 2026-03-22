@@ -12,25 +12,37 @@ namespace FlightManager.Data
         {
         }
 
+        public DbSet<Airplane> Airplanes { get; set; }
+        public DbSet<Airport> Airports { get; set; }
         public DbSet<Flight> Flights { get; set; }
-        public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Passenger> Passengers { get; set; }
-
+        public DbSet<Reservation> Reservations { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Reservation>()
-                .HasOne(r => r.Flight)
-                .WithMany(f => f.Reservations)
-                .HasForeignKey(r => r.FlightId)
+            // configure deletion behavior
+            builder.Entity<Flight>()
+                .HasOne(f => f.DepartureAirport)
+                .WithMany(a => a.DepartingFlights)
+                .HasForeignKey(f => f.DepartureAirportIataCode)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Flight>()
+                .HasOne(f => f.LandingAirport)
+                .WithMany(a => a.ArrivingFlights)
+                .HasForeignKey(f => f.LandingAirportIataCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ensure EGN is unique
             builder.Entity<Passenger>()
-                .HasOne(p => p.Reservation)
-                .WithMany(r => r.Passengers)
-                .HasForeignKey(p => p.ReservationId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasIndex(p => p.EGN)
+                .IsUnique();
+
+            builder.Entity<User>()
+                .HasIndex(p => p.EGN)
+                .IsUnique();
         }
     }
 }

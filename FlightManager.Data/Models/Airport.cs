@@ -9,19 +9,23 @@ namespace FlightManager.Data.Models
     {
         [Key]
         [RegularExpression(@"^[A-Z]{3}$", ErrorMessage = "IATA кодът трябва да бъде точно 3 големи букви.")]
-        public required string IataCode { get; set; }
+        [Display(Name = "IATA код")]
+        public string IataCode { get; set; } = string.Empty;
 
         [Required]
         [StringLength(30, MinimumLength = 2, ErrorMessage = "Името на държавата трябва да е между 2 и 30 символа.")]
-        public required string Country { get; set; }
+        [Display(Name = "Държава")]
+        public string Country { get; set; } = string.Empty;
 
         [Required]
         [StringLength(30, MinimumLength = 2, ErrorMessage = "Името на града трябва да бъде между 2 и 30 символа.")]
-        public required string City { get; set; }
+        [Display(Name = "Град")]
+        public string City { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Името на летището трябва да е между 2 и 100 символа.")]
-        public required string AirportName { get; set; }
+        [Display(Name = "Летище")]
+        public string AirportName { get; set; } = string.Empty;
 
         public ICollection<Flight> DepartingFlights { get; set; } = new List<Flight>();
         public ICollection<Flight> ArrivingFlights { get; set; } = new List<Flight>();

@@ -9,18 +9,22 @@ namespace FlightManager.Data.Models
     {
         [Key]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Идентификаторът на самолета трябва да е между 2 и 20 символа.")]
-        public required string Id { get; set; }
+        [Display(Name = "Идентификационен номер на самолета")]
+        public string Id { get; set; } = string.Empty;
 
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Моделът на самолета трябва да е между 2 и 50 символа.")]
-        public required string Model { get; set; }
+        [Display(Name = "Модел на самолета")]
+        public string Model { get; set; } = string.Empty;
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Капацитетът на икономичната класа трябва да бъде положително число.")]
-        public required int EconomyClassSeats { get; set; }
+        [Display(Name = "Капацитет на икономичната класа")]
+        public int EconomyClassSeats { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Капацитетът на бизнес класата трябва да бъде положително число.")]
-        public required int BuisnessClassSeats { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Капацитетът на бизнес класата трябва да бъде неотрицателно число.")]
+        [Display(Name = "Капацитет на бизнес класата")]
+        public int BusinessClassSeats { get; set; }
     }
 }

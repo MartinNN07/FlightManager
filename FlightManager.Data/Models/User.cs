@@ -10,15 +10,15 @@ namespace FlightManager.Data.Models
     {
         [Required(ErrorMessage = "Първото име е задължително.")]
         [StringLength(50, MinimumLength = 2)]
-        public required string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Фамилията е задължителна.")]
         [StringLength(50, MinimumLength = 2)]
-        public required string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required]
         [RegularExpression(@"^\d{10}$", ErrorMessage = "ЕГН-то трябва да бъде точно 10 цифри.")]
-        public required string EGN { get; set; }
+        public string EGN { get; set; } = string.Empty;
 
         [StringLength(200, MinimumLength = 5)]
         public string? Address { get; set; } = string.Empty;

@@ -25,15 +25,15 @@ namespace FlightManager.Services
             var body = new StringBuilder();
             body.AppendLine($"<h2>Резервация #{reservation.Id}</h2>");
             body.AppendLine($"<p><b>Полет:</b> {flight.FlightNumber}</p>");
-            body.AppendLine($"<p><b>От:</b> {flight.DepartureLocation} → <b>До:</b> {flight.ArrivalLocation}</p>");
+            body.AppendLine($"<p><b>От:</b> {flight.DepartureAirport.AirportName} → <b>До:</b> {flight.LandingAirport.AirportName}</p>");
             body.AppendLine($"<p><b>Излитане:</b> {flight.DepartureTime:dd.MM.yyyy HH:mm}</p>");
-            body.AppendLine($"<p><b>Кацане:</b> {flight.ArrivalTime:dd.MM.yyyy HH:mm}</p>");
+            body.AppendLine($"<p><b>Кацане:</b> {flight.LandingTime:dd.MM.yyyy HH:mm}</p>");
             body.AppendLine("<hr/><h3>Пътници:</h3><ul>");
 
             foreach (var p in reservation.Passengers)
             {
                 body.AppendLine($"<li>{p.FirstName} {p.MiddleName} {p.LastName} " +
-                                $"— {(p.TicketType == TicketType.Business ? "Бизнес класа" : "Икономична класа")}</li>");
+                                $"— {(reservation.SeatClass == SeatingClass.Business ? "Бизнес класа" : "Икономична класа")}</li>");
             }
 
             body.AppendLine("</ul>");
