@@ -30,27 +30,34 @@ namespace FlightManager.Services.Services
         }
         public async Task CreateAirplaneAsync(Airplane airplane)
         {
+            if (await AirplaneExistsAsync(airplane.Id))
+            {
+                throw new InvalidOperationException($"Airplane with ID '{airplane.Id}' already exists.");
+            }
+
             await _context.Airplanes.AddAsync(airplane);
             await _context.SaveChangesAsync();
         }
-        public async Task UpdateAirplaneAsync(Airplane updatedAirplane)
+        public async Task UpdateAirplaneAsync(Airplane airplane)
         {
-            Airplane? airplane = await _context.Airplanes.FindAsync(updatedAirplane.Id);
+            Airplane? existingAirplane = await GetAirplaneByIdAsync(airplane.Id);
 
-            if (airplane is null)
+            if (existingAirplane is null)
             {
-                throw new KeyNotFoundException($"Airplane with ID '{updatedAirplane.Id}' not found.");
+                throw new KeyNotFoundException($"Airplane with ID '{airplane.Id}' not found.");
             }
 
-            airplane.Model = updatedAirplane.Model;
-            airplane.EconomyClassSeats = updatedAirplane.EconomyClassSeats;
-            airplane.BusinessClassSeats = updatedAirplane.BusinessClassSeats;
+            existingAirplane.Model = airplane.Model;
+            existingAirplane.EconomyClassSeats = airplane.EconomyClassSeats;
+            existingAirplane.BusinessClassSeats = airplane.BusinessClassSeats;
+            _context.Airplanes.Update(existingAirplane);
+
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAirplaneAsync(string airplaneId)
         { 
-            Airplane? airplane = await _context.Airplanes.FindAsync(airplaneId);
+            Airplane? airplane = await GetAirplaneByIdAsync(airplaneId);
 
             if (airplane is null)
             {
