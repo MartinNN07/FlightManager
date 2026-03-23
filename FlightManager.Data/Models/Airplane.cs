@@ -8,6 +8,7 @@ namespace FlightManager.Data.Models
     public class Airplane
     {
         [Key]
+        [Required]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Идентификаторът на самолета трябва да е между 2 и 20 символа.")]
         [Display(Name = "Идентификационен номер на самолета")]
         public string Id { get; set; } = string.Empty;

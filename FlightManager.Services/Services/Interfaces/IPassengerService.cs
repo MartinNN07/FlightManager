@@ -5,7 +5,7 @@ using FlightManager.Data.Models;
 
 namespace FlightManager.Services.Services.Interfaces
 {
-    internal interface IPassengerService
+    public interface IPassengerService
     {
         /// <summary>
         /// Asynchronously retrieves all passengers available in the data source.

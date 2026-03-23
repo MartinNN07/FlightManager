@@ -50,7 +50,6 @@ namespace FlightManager.Services.Services
             existingAirplane.Model = airplane.Model;
             existingAirplane.EconomyClassSeats = airplane.EconomyClassSeats;
             existingAirplane.BusinessClassSeats = airplane.BusinessClassSeats;
-            _context.Airplanes.Update(existingAirplane);
 
             await _context.SaveChangesAsync();
         }

@@ -1,5 +1,7 @@
 using FlightManager.Data;
 using FlightManager.Data.Models;
+using FlightManager.Services.Services;
+using FlightManager.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MimeKit;
@@ -12,10 +14,18 @@ namespace FlightManager
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
             // Register the DbContext with the connection string from configuration
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            //Register services
+            builder.Services.AddScoped<IAirplaneService, AirplaneService>();
+            builder.Services.AddScoped<IAirportService, AirportService>();
+            builder.Services.AddScoped<IFlightService, FlightService>();
+            builder.Services.AddScoped<IPassengerService, PassengerService>();
+            builder.Services.AddScoped<IReservationService, ReservationService>();
 
             //Set up Identity Users
             builder.Services.AddIdentity<User, IdentityRole>(options => {
@@ -53,11 +63,15 @@ namespace FlightManager
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
-            app.UseAuthorization();
             app.UseAuthentication();
-
+            app.UseAuthorization();
             app.MapStaticAssets();
+
+            app.MapControllerRoute(
+                name: "admin",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+                .WithStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

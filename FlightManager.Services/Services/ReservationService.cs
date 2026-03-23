@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightManager.Services.Services
 {
-    internal class ReservationService : IReservationService
+    public class ReservationService : IReservationService
     {
         private readonly ApplicationDbContext _context;
 

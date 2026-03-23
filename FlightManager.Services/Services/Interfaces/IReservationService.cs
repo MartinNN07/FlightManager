@@ -5,7 +5,7 @@ using FlightManager.Data.Models;
 
 namespace FlightManager.Services.Services.Interfaces
 {
-    internal interface IReservationService
+    public interface IReservationService
     {
         /// <summary>
         /// Asynchronously retrieves all reservations available in the data source.
