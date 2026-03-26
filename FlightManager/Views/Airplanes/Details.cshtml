@@ -1,0 +1,45 @@
+@model FlightManager.Web.ViewModels.Airplane.AirplaneDetailsViewModel
+
+@{
+    ViewData["Title"] = "Детайли за самолет";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Назад към списъка
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Id)</dt>
+            <dd class="col-sm-7">@Model.Id</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Model)</dt>
+            <dd class="col-sm-7">@Model.Model</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.EconomyClassSeats)</dt>
+            <dd class="col-sm-7">@Model.EconomyClassSeats</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.BusinessClassSeats)</dt>
+            <dd class="col-sm-7">@Model.BusinessClassSeats</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.TotalSeats)</dt>
+            <dd class="col-sm-7"><strong>@Model.TotalSeats</strong></dd>
+        </dl>
+
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="d-flex gap-2 mt-3">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                    <i class="bi bi-pencil"></i> Редактирай
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Изтрий
+                </a>
+            </div>
+        }
+    </div>
+</div>

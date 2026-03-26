@@ -1,0 +1,38 @@
+@using Microsoft.AspNetCore.Identity
+@using FlightManager.Data.Models
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+    <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+            <span class="nav-link text-dark">
+                Здравейте, <strong>@currentUser?.FirstName</strong>
+            </span>
+        </li>
+        @if (await UserManager.IsInRoleAsync(currentUser!, "Admin"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="Users" asp-action="Index">Потребители</a>
+            </li>
+        }
+        <li class="nav-item">
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-link nav-link text-dark p-0 ms-2">Изход</button>
+            </form>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Регистрация</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Вход</a>
+        </li>
+    </ul>
+}
