@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightManager.Web.Controllers
 {
+    [Authorize]
     public class AirplanesController : Controller
     {
         private readonly IAirplaneService _airplaneService;
