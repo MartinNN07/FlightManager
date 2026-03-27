@@ -38,7 +38,7 @@ namespace FlightManager.Web.Controllers
 
         // CREATE (GET)
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View(new AirplaneCreateViewModel());
@@ -47,7 +47,7 @@ namespace FlightManager.Web.Controllers
         // CREATE (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(AirplaneCreateViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
@@ -67,7 +67,7 @@ namespace FlightManager.Web.Controllers
 
         // EDIT (GET)
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return BadRequest();
@@ -81,7 +81,7 @@ namespace FlightManager.Web.Controllers
         // EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string id, AirplaneEditViewModel viewModel)
         {
             if (id != viewModel.Id) return BadRequest();
@@ -102,7 +102,7 @@ namespace FlightManager.Web.Controllers
 
         // DELETE (GET)
         [HttpGet]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return BadRequest();
@@ -116,7 +116,7 @@ namespace FlightManager.Web.Controllers
         // DELETE (POST)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             try
