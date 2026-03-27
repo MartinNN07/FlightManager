@@ -1,8 +1,76 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Flight Manager";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="py-5 mb-4 rounded-3" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: white;">
+    <div class="container py-2 text-center">
+        <h1 class="display-5 fw-bold">✈️ Flight Manager</h1>
+        <p class="fs-5 text-white-50 mb-4">Намерете своя полет и резервирайте билет онлайн</p>
+
+        <form asp-controller="Flights" asp-action="Index" method="get"
+              class="row g-2 justify-content-center">
+            <div class="col-auto">
+                <input name="fromIata" class="form-control form-control-lg"
+                       placeholder="От (напр. SOF)" maxlength="3"
+                       style="text-transform:uppercase; width:150px" />
+            </div>
+            <div class="col-auto align-self-center text-white fs-4">→</div>
+            <div class="col-auto">
+                <input name="toIata" class="form-control form-control-lg"
+                       placeholder="До (напр. LHR)" maxlength="3"
+                       style="text-transform:uppercase; width:150px" />
+            </div>
+            <div class="col-auto">
+                <input name="date" type="date" class="form-control form-control-lg" style="width:180px" />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-warning btn-lg fw-bold">
+                    🔍 Търси полети
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+            <div class="fs-1 mb-2">🎫</div>
+            <h5 class="fw-bold">Резервирайте без акаунт</h5>
+            <p class="text-muted">Не е нужна регистрация. Намерете полет и резервирайте директно.</p>
+            <a asp-controller="Flights" asp-action="Index" class="btn btn-outline-primary btn-sm mt-auto">
+                Вижте всички полети
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+            <div class="fs-1 mb-2">📧</div>
+            <h5 class="fw-bold">Имейл потвърждение</h5>
+            <p class="text-muted">След успешна резервация получавате имейл с всички детайли за билетите.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+            <div class="fs-1 mb-2">👥</div>
+            <h5 class="fw-bold">Групови резервации</h5>
+            <p class="text-muted">Резервирайте за множество пътници в една заявка.</p>
+        </div>
+    </div>
+</div>
+
+@if (User.Identity!.IsAuthenticated)
+{
+    <div class="alert alert-light border">
+        <h5 class="fw-bold mb-3">🛠️ Бързи действия</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="Flights" asp-action="Index" class="btn btn-outline-dark">✈️ Полети</a>
+            <a asp-controller="Reservations" asp-action="Index" class="btn btn-outline-dark">📋 Резервации</a>
+            <a asp-controller="Airplanes" asp-action="Index" class="btn btn-outline-dark">🛩️ Самолети</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Users" asp-action="Index" class="btn btn-outline-danger">👤 Потребители</a>
+            }
+        </div>
+    </div>
+}

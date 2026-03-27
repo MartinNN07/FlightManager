@@ -1,5 +1,4 @@
 using FlightManager.Data.Models;
-using FlightManager.Models;
 using FlightManager.Web.ViewModels.Account;
 
 namespace FlightManager.Web.Mappers

@@ -1,5 +1,4 @@
 ﻿using FlightManager.Data.Models;
-using FlightManager.Models;
 using FlightManager.Web.Mappers;
 using FlightManager.Web.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
