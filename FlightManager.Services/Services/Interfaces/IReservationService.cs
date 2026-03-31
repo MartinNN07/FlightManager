@@ -45,13 +45,6 @@ namespace FlightManager.Services.Services.Interfaces
         Task UpdateReservationAsync(Reservation updatedReservation);
 
         /// <summary>
-        /// Asynchronously deletes the reservation with the specified identifier.
-        /// </summary>
-        /// <param name="reservationId">The unique identifier of the reservation to delete. Cannot be null or empty.</param>
-        /// <returns>A task that represents the asynchronous delete operation.</returns>
-        Task DeleteReservationAsync(int reservationId);
-
-        /// <summary>
         /// Determines asynchronously whether an reservation with the specified identifier exists.
         /// </summary>
         /// <param name="reservationId">The unique identifier of the reservation to check for existence. Cannot be null or empty.</param>

@@ -49,19 +49,6 @@ namespace FlightManager.Web.Mappers
             };
         }
 
-        public static ReservationDeleteViewModel ToDeleteViewModel(Reservation reservation)
-        {
-            return new ReservationDeleteViewModel
-            {
-                Id = reservation.Id,
-                ContactEmail = reservation.ContactEmail,
-                CreatedAt = reservation.CreatedAt,
-                FlightId = reservation.FlightId,
-                SeatClass = reservation.SeatClass,
-                PassengerCount = reservation.Passengers?.Count ?? 0
-            };
-        }
-
         public static Reservation ToModel(ReservationCreateViewModel viewModel)
         {
             return new Reservation

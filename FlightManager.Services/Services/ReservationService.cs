@@ -55,17 +55,5 @@ namespace FlightManager.Services.Services
             _context.Reservations.Update(Reservation);
             await _context.SaveChangesAsync();
         }
-        public async Task DeleteReservationAsync(int reservationId)
-        {
-            Reservation? Reservation = await _context.Reservations.FindAsync(reservationId);
-
-            if (Reservation is null)
-            {
-                throw new KeyNotFoundException($"Reservation with ID '{reservationId}' not found.");
-            }
-
-            _context.Reservations.Remove(Reservation);
-            await _context.SaveChangesAsync();
-        }
     }
 }

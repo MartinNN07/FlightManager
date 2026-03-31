@@ -1,0 +1,126 @@
+﻿@model FlightManager.Web.ViewModels.User.UserListViewModel
+
+@{
+    ViewData["Title"] = "Управление на потребители";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<form asp-action="Index" method="get" class="card card-body mb-4">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <label class="form-label">Имейл</label>
+            <input type="text" name="filterEmail" value="@Model.FilterEmail" class="form-control" placeholder="Търси по имейл..." />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Потребителско име</label>
+            <input type="text" name="filterUserName" value="@Model.FilterUserName" class="form-control" placeholder="Търси по потр. име..." />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Собствено име</label>
+            <input type="text" name="filterFirstName" value="@Model.FilterFirstName" class="form-control" placeholder="Търси..." />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Фамилия</label>
+            <input type="text" name="filterLastName" value="@Model.FilterLastName" class="form-control" placeholder="Търси..." />
+        </div>
+        <div class="col-md-1">
+            <label class="form-label">Записи</label>
+            <select name="pageSize" class="form-select">
+                @foreach (var size in new[] { 10, 25, 50 })
+                {
+                    <option value="@size" selected="@(Model.PageSize == size)">@size</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end gap-1">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-search"></i>
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </div>
+</form>
+
+<div class="text-muted small mb-2">
+    Показани @((Model.CurrentPage - 1) * Model.PageSize + 1)–@(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount))
+    от @Model.TotalCount потребители
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Потребителско име</th>
+            <th>Имейл</th>
+            <th>Собствено име</th>
+            <th>Фамилия</th>
+            <th>ЕГН</th>
+            <th>Телефон</th>
+            <th>Адрес</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Users.Any())
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">Няма намерени потребители.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.EGN</td>
+                    <td>@(user.PhoneNumber ?? "—")</td>
+                    <td>@(user.Address ?? "—")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Странициране">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-filterEmail="@Model.FilterEmail"
+                       asp-route-filterUserName="@Model.FilterUserName" asp-route-filterFirstName="@Model.FilterFirstName"
+                       asp-route-filterLastName="@Model.FilterLastName" asp-route-pageSize="@Model.PageSize"
+                       asp-route-currentPage="@(Model.CurrentPage - 1)">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-filterEmail="@Model.FilterEmail"
+                       asp-route-filterUserName="@Model.FilterUserName" asp-route-filterFirstName="@Model.FilterFirstName"
+                       asp-route-filterLastName="@Model.FilterLastName" asp-route-pageSize="@Model.PageSize"
+                       asp-route-currentPage="@i">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-filterEmail="@Model.FilterEmail"
+                       asp-route-filterUserName="@Model.FilterUserName" asp-route-filterFirstName="@Model.FilterFirstName"
+                       asp-route-filterLastName="@Model.FilterLastName" asp-route-pageSize="@Model.PageSize"
+                       asp-route-currentPage="@(Model.CurrentPage + 1)">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}

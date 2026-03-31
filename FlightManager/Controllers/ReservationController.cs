@@ -106,38 +106,6 @@ namespace FlightManager.Web.Controllers
             return View(viewModel);
         }
 
-        // GET: Reservations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var reservation = await _reservationService.GetreservationByIdAsync(id.Value);
-
-            if (reservation == null)
-                return NotFound();
-
-            var viewModel = ReservationMapper.ToDeleteViewModel(reservation);
-            return View(viewModel);
-        }
-
-        // POST: Reservations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                await _reservationService.DeleteReservationAsync(id);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
         private async Task PopulateFlightsDropDownAsync(string? selectedId = null)
         {
             var flights = await _flightService.GetAllFlightsAsync();
