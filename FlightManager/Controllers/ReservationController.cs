@@ -3,6 +3,7 @@ using FlightManager.Web.Mappers;
 using FlightManager.Web.ViewModels.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
 
 namespace FlightManager.Web.Controllers
 {
@@ -10,11 +11,16 @@ namespace FlightManager.Web.Controllers
     {
         private readonly IReservationService _reservationService;
         private readonly IFlightService _flightService;
+        private readonly IPassengerService _passengerService;
 
-        public ReservationsController(IReservationService reservationService, IFlightService flightService)
+        public ReservationsController(
+            IReservationService reservationService,
+            IFlightService flightService,
+            IPassengerService passengerService)
         {
             _reservationService = reservationService;
             _flightService = flightService;
+            _passengerService = passengerService;
         }
 
         // GET: Reservations
@@ -44,7 +50,7 @@ namespace FlightManager.Web.Controllers
         public async Task<IActionResult> Create()
         {
             await PopulateFlightsDropDownAsync();
-            return View();
+            return View(new ReservationCreateViewModel());
         }
 
         // POST: Reservations/Create
@@ -56,6 +62,23 @@ namespace FlightManager.Web.Controllers
             {
                 var reservation = ReservationMapper.ToModel(viewModel);
                 await _reservationService.CreateReservationAsync(reservation);
+
+                // Save each passenger linked to the new reservation
+                foreach (var passengerInput in viewModel.Passengers)
+                {
+                    var passenger = new FlightManager.Data.Models.Passenger
+                    {
+                        FirstName = passengerInput.FirstName,
+                        MiddleName = passengerInput.MiddleName,
+                        LastName = passengerInput.LastName,
+                        EGN = passengerInput.EGN,
+                        PhoneNumber = passengerInput.PhoneNumber,
+                        Nationality = passengerInput.Nationality,
+                        ReservationId = reservation.Id
+                    };
+                    await _passengerService.CreatePassengerAsync(passenger);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -106,10 +129,27 @@ namespace FlightManager.Web.Controllers
             return View(viewModel);
         }
 
+        // ── Helpers ──────────────────────────────────────────────────────────
+
         private async Task PopulateFlightsDropDownAsync(string? selectedId = null)
         {
             var flights = await _flightService.GetAllFlightsAsync();
+
             ViewData["FlightId"] = new SelectList(flights, "Id", "Id", selectedId);
+
+            // Build a JSON dictionary so the Create view can show city/date info
+            // without an extra AJAX call. Adjust property names to match your
+            // Flight model (e.g. DepartureCity, ArrivalCity, DepartureTime).
+            var flightsJson = flights.ToDictionary(
+                f => f.FlightNumber.ToString(),
+                f => new
+                {
+                    departureCity = f.DepartureAirport.City,   // adjust to your property name
+                    arrivalCity = f.LandingAirport.City,     // adjust to your property name
+                    flightDate = f.DepartureTime.ToString("dd.MM.yyyy HH:mm") // adjust to your property name
+                });
+
+            ViewBag.FlightsJson = JsonSerializer.Serialize(flightsJson);
         }
     }
 }
