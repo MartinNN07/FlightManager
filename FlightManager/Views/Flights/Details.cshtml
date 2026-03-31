@@ -1,0 +1,156 @@
+﻿@model FlightManager.Web.ViewModels.Flights.FlightDetailsViewModel
+@{
+    ViewData["Title"] = $"Полет {Model.FlightNumber}";
+    string duration = $"{(int)Model.FlightDuration.TotalHours}ч {Model.FlightDuration.Minutes:D2}мин";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>✈️ Полет <strong>@Model.FlightNumber</strong></h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">← Назад към списъка</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header fw-bold bg-dark text-white">Маршрут</div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="text-center">
+                        <div class="fs-3 fw-bold">@Model.DepartureIata</div>
+                        <div class="text-muted small">@Model.DepartureCity</div>
+                        <div class="small">@Model.DepartureAirportName</div>
+                    </div>
+                    <div class="text-center px-3">
+                        <div class="text-muted small">✈️</div>
+                        <div class="badge bg-primary">@duration</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-3 fw-bold">@Model.LandingIata</div>
+                        <div class="text-muted small">@Model.LandingCity</div>
+                        <div class="small">@Model.LandingAirportName</div>
+                    </div>
+                </div>
+                <hr />
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Излитане</dt>
+                    <dd class="col-sm-7">@Model.DepartureTime.ToString("dd.MM.yyyy HH:mm")</dd>
+                    <dt class="col-sm-5">Продължителност</dt>
+                    <dd class="col-sm-7"><strong>@duration</strong></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header fw-bold bg-dark text-white">Информация за полета</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Пилот</dt>
+                    <dd class="col-sm-7">@Model.PilotName</dd>
+
+                    <dt class="col-sm-5">Самолет</dt>
+                    <dd class="col-sm-7">@Model.AirplaneModel <small class="text-muted">(@Model.AirplaneId)</small></dd>
+
+                    <dt class="col-sm-5">Икономична класа</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge @(Model.AvailableEconomySeats > 0 ? "bg-success" : "bg-danger")">
+                            @Model.AvailableEconomySeats свободни
+                        </span>
+                        <small class="text-muted">/ @Model.TotalEconomySeats общо</small>
+                    </dd>
+
+                    <dt class="col-sm-5">Бизнес класа</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge @(Model.AvailableBusinessSeats > 0 ? "bg-success" : "bg-danger")">
+                            @Model.AvailableBusinessSeats свободни
+                        </span>
+                        <small class="text-muted">/ @Model.TotalBusinessSeats общо</small>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="d-flex gap-2 mb-4">
+        <a asp-action="Edit" asp-route-id="@Model.FlightNumber" class="btn btn-outline-warning">
+            <i class="bi bi-pencil"></i> Редактирай
+        </a>
+        <a asp-action="Delete" asp-route-id="@Model.FlightNumber" class="btn btn-outline-danger">
+            <i class="bi bi-trash"></i> Изтрий
+        </a>
+    </div>
+}
+
+@if (!User.IsInRole("Admin") || !User.Identity!.IsAuthenticated)
+{
+    <a asp-controller="Reservations" asp-action="Create" asp-route-flightId="@Model.FlightNumber"
+           class="btn btn-success mb-4">
+        🎫 Резервирай билет
+    </a>
+}
+
+@if (User.Identity!.IsAuthenticated)
+{
+    <h4 class="mb-2">Пътници (@Model.TotalPassengers)</h4>
+
+    @if (!Model.Passengers.Any())
+    {
+        <div class="alert alert-info">Няма регистрирани пътници за този полет.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Пълно ime</th>
+                        <th>Националност</th>
+                        <th>Класа</th>
+                        <th>Имейл за контакт</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Passengers)
+                    {
+                        <tr>
+                            <td>@p.FullName</td>
+                            <td>@p.Nationality</td>
+                            <td>
+                                @if (p.SeatClass == "Бизнес")
+                                {
+                                    <span class="badge bg-warning text-dark">Бизнес</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Икономична</span>
+                                }
+                            </td>
+                            <td><small>@p.ContactEmail</small></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPassengerPages > 1)
+        {
+            <nav>
+                <ul class="pagination pagination-sm">
+                    @for (int i = 1; i <= Model.TotalPassengerPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PassengerPage ? "active" : "")">
+                            <a class="page-link"
+                               asp-action="Details"
+                               asp-route-id="@Model.FlightNumber"
+                               asp-route-passengerPage="@i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+}

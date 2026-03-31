@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FlightManager.Data.Validation;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,7 +18,7 @@ namespace FlightManager.Data.Models
         public string LastName { get; set; } = string.Empty;
 
         [Required]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "ЕГН-то трябва да бъде точно 10 цифри.")]
+        [EgnValidation]
         public string EGN { get; set; } = string.Empty;
 
         [StringLength(200, MinimumLength = 5)]
