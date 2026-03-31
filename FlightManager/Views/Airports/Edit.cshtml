@@ -1,0 +1,54 @@
+@model FlightManager.Web.ViewModels.Airports.AirportEditViewModel
+
+@{
+    ViewData["Title"] = $"Редактирай летище {Model.IataCode}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">← Назад към списъка</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" asp-route-id="@Model.IataCode" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="IataCode" class="form-label fw-semibold"></label>
+                <input asp-for="IataCode" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AirportName" class="form-label fw-semibold"></label>
+                <input asp-for="AirportName" class="form-control" />
+                <span asp-validation-for="AirportName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="City" class="form-label fw-semibold"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Country" class="form-label fw-semibold"></label>
+                <input asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-floppy"></i> Запази промените
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Отказ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
