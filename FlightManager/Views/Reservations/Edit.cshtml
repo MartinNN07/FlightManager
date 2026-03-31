@@ -1,0 +1,59 @@
+﻿@using FlightManager.Data.Models
+@model FlightManager.Web.ViewModels.Reservations.ReservationEditViewModel
+
+@{
+    ViewData["Title"] = "Редактирай резервация";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Назад към списъка
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Id" class="form-label"></label>
+                <input asp-for="Id" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ContactEmail" class="form-label"></label>
+                <input asp-for="ContactEmail" class="form-control" type="email" />
+                <span asp-validation-for="ContactEmail" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FlightId" class="form-label"></label>
+                <input asp-for="FlightId" class="form-control" />
+                <span asp-validation-for="FlightId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SeatClass" class="form-label"></label>
+                <select asp-for="SeatClass" asp-items="Html.GetEnumSelectList<SeatingClass>()" class="form-select"></select>
+                <span asp-validation-for="SeatClass" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-floppy"></i> Запази промените
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Отказ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

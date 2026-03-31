@@ -1,0 +1,58 @@
+﻿@model FlightManager.Web.ViewModels.Passengers.PassengerDeleteViewModel
+
+@{
+    ViewData["Title"] = "Изтрий пътник";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Назад към списъка
+    </a>
+</div>
+
+<div class="alert alert-warning" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    Сигурни ли сте, че искате да изтриете този пътник? Действието е необратимо.
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Id)</dt>
+            <dd class="col-sm-7">@Model.Id</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.FirstName)</dt>
+            <dd class="col-sm-7">@Model.FirstName</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.MiddleName)</dt>
+            <dd class="col-sm-7">@Model.MiddleName</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.LastName)</dt>
+            <dd class="col-sm-7">@Model.LastName</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.EGN)</dt>
+            <dd class="col-sm-7">@Model.EGN</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.PhoneNumber)</dt>
+            <dd class="col-sm-7">@Model.PhoneNumber</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.Nationality)</dt>
+            <dd class="col-sm-7">@Model.Nationality</dd>
+
+            <dt class="col-sm-5">@Html.DisplayNameFor(m => m.ReservationId)</dt>
+            <dd class="col-sm-7">@Model.ReservationId</dd>
+        </dl>
+
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Да, изтрий
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Отказ</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+﻿@model IEnumerable<FlightManager.Web.ViewModels.Passengers.PassengerIndexViewModel>
+
+@{
+    ViewData["Title"] = "Пътници";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Добави пътник
+        </a>
+    }
+</div>
+
+@if (TempData["Success"] is string successMsg)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Няма намерени пътници.</div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.First().Id)</th>
+                <th>Име</th>
+                <th>@Html.DisplayNameFor(m => m.First().EGN)</th>
+                <th>@Html.DisplayNameFor(m => m.First().PhoneNumber)</th>
+                <th>@Html.DisplayNameFor(m => m.First().Nationality)</th>
+                <th>@Html.DisplayNameFor(m => m.First().ReservationId)</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var passenger in Model)
+            {
+                <tr>
+                    <td>@passenger.Id</td>
+                    <td>@passenger.FirstName @passenger.MiddleName @passenger.LastName</td>
+                    <td>@passenger.EGN</td>
+                    <td>@passenger.PhoneNumber</td>
+                    <td>@passenger.Nationality</td>
+                    <td>@passenger.ReservationId</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@passenger.Id"
+                           class="btn btn-sm btn-outline-info">Детайли</a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@passenger.Id"
+                               class="btn btn-sm btn-outline-warning ms-1">Редактирай</a>
+
+                            <a asp-action="Delete" asp-route-id="@passenger.Id"
+                               class="btn btn-sm btn-outline-danger ms-1">Изтрий</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
