@@ -15,11 +15,5 @@ namespace FlightManager.Web.ViewModels.Airports
 
         [Display(Name = "Летище")]
         public string AirportName { get; set; } = string.Empty;
-
-        [Display(Name = "Заминаващи полети")]
-        public int DepartingFlightsCount { get; set; }
-
-        [Display(Name = "Пристигащи полети")]
-        public int ArrivingFlightsCount { get; set; }
     }
 }
