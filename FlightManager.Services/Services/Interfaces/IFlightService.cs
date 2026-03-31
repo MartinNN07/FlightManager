@@ -69,5 +69,12 @@ namespace FlightManager.Services.Services.Interfaces
         /// <param name="flightNumber">The unique identifier of the flight to delete. Cannot be null or empty.</param>
         /// <returns>A task that represents the asynchronous delete operation.</returns>
         Task DeleteFlightAsync(string flightNumber);
+
+        /// <summary>
+        /// Asynchronously retrieves a collection of flights that match the departure and/or arrival search terms.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of
+        /// flights matching the search terms. The collection is empty if no flights are found.</returns>
+        Task<IEnumerable<Flight>> GetFlightsBySearchTermsAsync(string? departureTerm, string? arrivalTerm);
     }
 }

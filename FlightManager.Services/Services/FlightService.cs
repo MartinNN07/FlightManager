@@ -112,5 +112,36 @@ namespace FlightManager.Services.Services
             await _context.SaveChangesAsync();
 
         }
+
+        public async Task<IEnumerable<Flight>> GetFlightsBySearchTermsAsync(string? departureTerm, string? arrivalTerm)
+        {
+            var query = _context.Flights
+                .Include(f => f.DepartureAirport)
+                .Include(f => f.LandingAirport)
+                .Include(f => f.Airplane)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(departureTerm))
+            {
+                string depNorm = departureTerm.Trim().ToLower();
+                query = query.Where(f =>
+                    f.FlightNumber.ToLower().Contains(depNorm) ||
+                    f.DepartureAirportIataCode.ToLower().Contains(depNorm) ||
+                    f.DepartureAirport.City.ToLower().Contains(depNorm)
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(arrivalTerm))
+            {
+                string arrNorm = arrivalTerm.Trim().ToLower();
+                query = query.Where(f =>
+                    f.FlightNumber.ToLower().Contains(arrNorm) ||
+                    f.LandingAirportIataCode.ToLower().Contains(arrNorm) ||
+                    f.LandingAirport.City.ToLower().Contains(arrNorm)
+                );
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

@@ -23,23 +23,18 @@ namespace FlightManager.Web.Controllers
             _airplaneService = airplaneService;
         }
 
-        // GET: Flights
         [HttpGet]
         public async Task<IActionResult> Index(
-            string? fromIata,
-            string? toIata,
+            string? departureTerm,
+            string? arrivalTerm,
             DateTime? date,
             string? sortBy,
             int page = 1,
             int pageSize = 10)
         {
-            var flights = await _flightService.GetAllFlightsAsync();
-
-            if (!string.IsNullOrWhiteSpace(fromIata))
-                flights = flights.Where(f => f.DepartureAirportIataCode == fromIata);
-
-            if (!string.IsNullOrWhiteSpace(toIata))
-                flights = flights.Where(f => f.LandingAirportIataCode == toIata);
+            var flights = (string.IsNullOrWhiteSpace(departureTerm) && string.IsNullOrWhiteSpace(arrivalTerm))
+                ? await _flightService.GetAllFlightsAsync()
+                : await _flightService.GetFlightsBySearchTermsAsync(departureTerm, arrivalTerm);
 
             if (date.HasValue)
                 flights = flights.Where(f => f.DepartureTime.Date == date.Value.Date);
@@ -49,7 +44,7 @@ namespace FlightManager.Web.Controllers
                 "departure_desc" => flights.OrderByDescending(f => f.DepartureTime),
                 "from" => flights.OrderBy(f => f.DepartureAirport.City),
                 "to" => flights.OrderBy(f => f.LandingAirport.City),
-                _ => flights.OrderBy(f => f.DepartureTime)   // default: soonest first
+                _ => flights.OrderBy(f => f.DepartureTime)
             };
 
             var totalCount = flights.Count();
@@ -60,18 +55,101 @@ namespace FlightManager.Web.Controllers
                 .Select(FlightMapper.ToIndexViewModel)
                 .ToList();
 
-            var airports = await _airportService.GetAllAirportsAsync();
-            ViewBag.Airports = new SelectList(airports, "IataCode", "IataCode");
-            ViewBag.FromIata = fromIata;
-            ViewBag.ToIata = toIata;
             ViewBag.Date = date?.ToString("yyyy-MM-dd");
             ViewBag.SortBy = sortBy;
+            ViewBag.DepartureTerm = departureTerm;
+            ViewBag.ArrivalTerm = arrivalTerm;
             ViewBag.Page = page;
             ViewBag.PageSize = pageSize;
             ViewBag.TotalCount = totalCount;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             return View(paged);
+        }
+
+        // GET: Flights/SearchFlights?departureTerm=AB&arrivalTerm=CD&date=...
+        [HttpGet]
+        public async Task<IActionResult> SearchFlights(
+            string? departureTerm,
+            string? arrivalTerm,
+            DateTime? date,
+            string? sortBy,
+            int page = 1,
+            int pageSize = 10)
+        {
+            var flights = (string.IsNullOrWhiteSpace(departureTerm) && string.IsNullOrWhiteSpace(arrivalTerm))
+                ? await _flightService.GetAllFlightsAsync()
+                : await _flightService.GetFlightsBySearchTermsAsync(departureTerm, arrivalTerm);
+
+            if (date.HasValue)
+                flights = flights.Where(f => f.DepartureTime.Date == date.Value.Date);
+
+            flights = sortBy switch
+            {
+                "departure_desc" => flights.OrderByDescending(f => f.DepartureTime),
+                "from" => flights.OrderBy(f => f.DepartureAirport.City),
+                "to" => flights.OrderBy(f => f.LandingAirport.City),
+                _ => flights.OrderBy(f => f.DepartureTime)
+            };
+
+            var totalCount = flights.Count();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var paged = flights
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(FlightMapper.ToIndexViewModel)
+                .ToList();
+
+            return Json(new
+            {
+                totalCount,
+                totalPages,
+                currentPage = page,
+                flights = paged.Select(f => new
+                {
+                    f.FlightNumber,
+                    f.DepartureIata,
+                    f.DepartureCity,
+                    f.LandingIata,
+                    f.LandingCity,
+                    DepartureTime = f.DepartureTime.ToString("dd.MM.yyyy HH:mm"),
+                    f.AirplaneModel,
+                    f.AvailableEconomySeats,
+                    f.AvailableBusinessSeats
+                })
+            });
+        }
+
+        // GET: Flights/SearchSuggestions?term=AB
+        [HttpGet]
+        public async Task<IActionResult> SearchSuggestions(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term) || term.Length < 2)
+                return Json(Array.Empty<string>());
+
+            // Query using both parameters to find matches anywhere to ensure universal autocomplete functionality
+            var departureMatches = await _flightService.GetFlightsBySearchTermsAsync(term, null);
+            var arrivalMatches = await _flightService.GetFlightsBySearchTermsAsync(null, term);
+
+            var flights = departureMatches.Union(arrivalMatches).ToList();
+
+            var suggestions = flights
+                .SelectMany(f => new[]
+                {
+                    f.FlightNumber,
+                    f.DepartureAirportIataCode,
+                    f.LandingAirportIataCode,
+                    f.DepartureAirport?.City,
+                    f.LandingAirport?.City
+                })
+                .Where(s => s != null && s.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(s => s)
+                .Take(8)
+                .ToList();
+
+            return Json(suggestions);
         }
 
         // GET: Flights/Details/FB101
