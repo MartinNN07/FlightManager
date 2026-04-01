@@ -38,32 +38,10 @@ namespace FlightManager.Web.Mappers
             };
         }
 
-        public static ReservationEditViewModel ToEditViewModel(Reservation reservation)
-        {
-            return new ReservationEditViewModel
-            {
-                Id = reservation.Id,
-                ContactEmail = reservation.ContactEmail,
-                FlightId = reservation.FlightId,
-                SeatClass = reservation.SeatClass
-            };
-        }
-
         public static Reservation ToModel(ReservationCreateViewModel viewModel)
         {
             return new Reservation
             {
-                ContactEmail = viewModel.ContactEmail,
-                FlightId = viewModel.FlightId,
-                SeatClass = viewModel.SeatClass
-            };
-        }
-
-        public static Reservation ToModel(ReservationEditViewModel viewModel)
-        {
-            return new Reservation
-            {
-                Id = viewModel.Id,
                 ContactEmail = viewModel.ContactEmail,
                 FlightId = viewModel.FlightId,
                 SeatClass = viewModel.SeatClass

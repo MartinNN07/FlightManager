@@ -63,49 +63,6 @@ namespace FlightManager.Web.Controllers
             return View(viewModel);
         }
 
-        // GET: Reservations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var reservation = await _reservationService.GetreservationByIdAsync(id.Value);
-
-            if (reservation == null)
-                return NotFound();
-
-            var viewModel = ReservationMapper.ToEditViewModel(reservation);
-            await PopulateFlightsDropDownAsync(viewModel.FlightId);
-            return View(viewModel);
-        }
-
-        // POST: Reservations/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ReservationEditViewModel viewModel)
-        {
-            if (id != viewModel.Id)
-                return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var reservation = ReservationMapper.ToModel(viewModel);
-                    await _reservationService.UpdateReservationAsync(reservation);
-                }
-                catch (KeyNotFoundException)
-                {
-                    return NotFound();
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            await PopulateFlightsDropDownAsync(viewModel.FlightId);
-            return View(viewModel);
-        }
-
         private async Task PopulateFlightsDropDownAsync(string? selectedId = null)
         {
             var flights = await _flightService.GetAllFlightsAsync();

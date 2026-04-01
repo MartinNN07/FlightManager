@@ -37,12 +37,6 @@ namespace FlightManager.Services.Services.Interfaces
         /// <returns>A task that represents the asynchronous create operation.</returns>
         Task CreateReservationAsync(Reservation reservation);
 
-        /// <summary>
-        /// Asynchronously updates the details of the specified reservation in the data store.
-        /// </summary>
-        /// <param name="updatedReservation">The reservation entity containing updated information. Cannot be null.</param>
-        /// <returns>A task that represents the asynchronous update operation.</returns>
-        Task UpdateReservationAsync(Reservation updatedReservation);
 
         /// <summary>
         /// Determines asynchronously whether an reservation with the specified identifier exists.

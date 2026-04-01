@@ -37,23 +37,5 @@ namespace FlightManager.Services.Services
             await _context.Reservations.AddAsync(reservation);
             await _context.SaveChangesAsync();
         }
-        public async Task UpdateReservationAsync(Reservation updatedReservation)
-        {
-            Reservation? Reservation = await _context.Reservations.FindAsync(updatedReservation.Id);
-
-            if (Reservation is null)
-            {
-                throw new KeyNotFoundException($"Reservation with ID '{updatedReservation.Id}' not found.");
-            }
-
-            Reservation.ContactEmail = updatedReservation.ContactEmail;
-            Reservation.CreatedAt = updatedReservation.CreatedAt;
-            Reservation.FlightId = updatedReservation.FlightId;
-            Reservation.Flight = updatedReservation.Flight;
-            Reservation.SeatClass = updatedReservation.SeatClass;
-            Reservation.Passengers = updatedReservation.Passengers;
-            _context.Reservations.Update(Reservation);
-            await _context.SaveChangesAsync();
-        }
     }
 }
