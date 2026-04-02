@@ -195,14 +195,14 @@ namespace FlightManager.Web.Controllers
                 {
                     string seatClassLabel = viewModel.SeatClass == SeatingClass.Business ? "Бизнес" : "Икономична";
 
-                    /*await _emailService.SendReservationConfirmationAsync(
+                    await _emailService.SendReservationConfirmationAsync(
                         toEmail: viewModel.ContactEmail,
                         flightNumber: viewModel.FlightId,
                         departureCity: viewModel.DepartureCity ?? string.Empty,
                         arrivalCity: viewModel.ArrivalCity ?? string.Empty,
                         departureTime: viewModel.FlightDate ?? DateTime.UtcNow,
                         seatClass: seatClassLabel,
-                        passengerNames: passengerNames);*/
+                        passengerNames: passengerNames);
                 }
                 catch
                 {
