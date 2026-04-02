@@ -41,7 +41,7 @@ namespace FlightManager.Web.Controllers
             if (id == null)
                 return NotFound();
 
-            var reservation = await _reservationService.GetreservationByIdAsync(id.Value);
+            var reservation = await _reservationService.GetReservationByIdAsync(id.Value);
 
             if (reservation == null)
                 return NotFound();

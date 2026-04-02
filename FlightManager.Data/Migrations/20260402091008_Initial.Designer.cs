@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260402084945_RemoveDeletionBehaiviour")]
-    partial class RemoveDeletionBehaiviour
+    [Migration("20260402091008_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -440,13 +440,13 @@ namespace FlightManager.Data.Migrations
                     b.HasOne("FlightManager.Data.Models.Airport", "DepartureAirport")
                         .WithMany("DepartingFlights")
                         .HasForeignKey("DepartureAirportIataCode")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("FlightManager.Data.Models.Airport", "LandingAirport")
                         .WithMany("ArrivingFlights")
                         .HasForeignKey("LandingAirportIataCode")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Airplane");

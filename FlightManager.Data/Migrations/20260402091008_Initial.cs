@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FlightManager.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -84,6 +84,22 @@ namespace FlightManager.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Passengers",
+                columns: table => new
+                {
+                    EGN = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    MiddleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Nationality = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Passengers", x => x.EGN);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Flights",
                 columns: table => new
                 {
@@ -108,14 +124,12 @@ namespace FlightManager.Data.Migrations
                         name: "FK_Flights_Airports_DepartureAirportIataCode",
                         column: x => x.DepartureAirportIataCode,
                         principalTable: "Airports",
-                        principalColumn: "IataCode",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "IataCode");
                     table.ForeignKey(
                         name: "FK_Flights_Airports_LandingAirportIataCode",
                         column: x => x.LandingAirportIataCode,
                         principalTable: "Airports",
-                        principalColumn: "IataCode",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "IataCode");
                 });
 
             migrationBuilder.CreateTable(
@@ -247,25 +261,24 @@ namespace FlightManager.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Passengers",
+                name: "PassengerReservations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    MiddleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    EGN = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Nationality = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
-                    ReservationId = table.Column<int>(type: "int", nullable: false)
+                    PassengersEGN = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReservationsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Passengers", x => x.Id);
+                    table.PrimaryKey("PK_PassengerReservations", x => new { x.PassengersEGN, x.ReservationsId });
                     table.ForeignKey(
-                        name: "FK_Passengers_Reservations_ReservationId",
-                        column: x => x.ReservationId,
+                        name: "FK_PassengerReservations_Passengers_PassengersEGN",
+                        column: x => x.PassengersEGN,
+                        principalTable: "Passengers",
+                        principalColumn: "EGN",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PassengerReservations_Reservations_ReservationsId",
+                        column: x => x.ReservationsId,
                         principalTable: "Reservations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -333,15 +346,15 @@ namespace FlightManager.Data.Migrations
                 column: "LandingAirportIataCode");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PassengerReservations_ReservationsId",
+                table: "PassengerReservations",
+                column: "ReservationsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Passengers_EGN",
                 table: "Passengers",
                 column: "EGN",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Passengers_ReservationId",
-                table: "Passengers",
-                column: "ReservationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_FlightId",
@@ -368,13 +381,16 @@ namespace FlightManager.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Passengers");
+                name: "PassengerReservations");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Passengers");
 
             migrationBuilder.DropTable(
                 name: "Reservations");

@@ -29,6 +29,12 @@ namespace FlightManager.Data
                 .HasForeignKey(f => f.DepartureAirportIataCode)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Flight>()
+                .HasOne(f => f.LandingAirport)
+                .WithMany(a => a.ArrivingFlights)
+                .HasForeignKey(f => f.LandingAirportIataCode)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<Passenger>()
                 .HasMany(p => p.Reservations)
                 .WithMany(r => r.Passengers)

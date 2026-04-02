@@ -443,7 +443,7 @@ namespace FlightManager.Data.Migrations
                     b.HasOne("FlightManager.Data.Models.Airport", "LandingAirport")
                         .WithMany("ArrivingFlights")
                         .HasForeignKey("LandingAirportIataCode")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Airplane");
