@@ -31,12 +31,16 @@ namespace FlightManager.Web.ViewModels.Flights
         [DataType(DataType.DateTime)]
         [FutureDate(ErrorMessage = "Датата на излитане не може да бъде в миналото.")]
         [Display(Name = "Дата и час на излитане")]
-        public DateTime DepartureTime { get; set; } = DateTime.Now.AddHours(1);
+        public DateTime DepartureTime { get; set; } = new DateTime(
+            DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,
+            DateTime.Now.Hour, DateTime.Now.Minute, 0).AddHours(1);
 
         [Required(ErrorMessage = "Датата на кацане е задължителна.")]
         [DataType(DataType.DateTime)]
         [LandingAfterDeparture(nameof(DepartureTime), ErrorMessage = "Датата на кацане трябва да бъде след датата на излитане.")]
         [Display(Name = "Дата и час на кацане")]
-        public DateTime LandingTime { get; set; } = DateTime.Now.AddHours(2);
+        public DateTime LandingTime { get; set; } = new DateTime(
+            DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,
+            DateTime.Now.Hour, DateTime.Now.Minute, 0).AddHours(2);
     }
 }

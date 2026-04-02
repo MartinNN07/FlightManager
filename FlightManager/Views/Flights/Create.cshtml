@@ -25,16 +25,14 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="DepartureAirportIataCode" class="form-label fw-semibold"></label>
-                    <select asp-for="DepartureAirportIataCode" asp-items="ViewBag.Airports"
-                            class="form-select">
+                    <select asp-for="DepartureAirportIataCode" asp-items="ViewBag.Airports" class="form-select">
                         <option value="">— Изберете —</option>
                     </select>
                     <span asp-validation-for="DepartureAirportIataCode" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="LandingAirportIataCode" class="form-label fw-semibold"></label>
-                    <select asp-for="LandingAirportIataCode" asp-items="ViewBag.Airports"
-                            class="form-select">
+                    <select asp-for="LandingAirportIataCode" asp-items="ViewBag.Airports" class="form-select">
                         <option value="">— Изберете —</option>
                     </select>
                     <span asp-validation-for="LandingAirportIataCode" class="text-danger small"></span>
@@ -58,12 +56,18 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="DepartureTime" class="form-label fw-semibold"></label>
-                    <input asp-for="DepartureTime" type="datetime-local" class="form-control" />
+                    <input asp-for="DepartureTime"
+                           type="datetime-local"
+                           class="form-control"
+                           value="@Model.DepartureTime.ToString("yyyy-MM-ddTHH:mm")" />
                     <span asp-validation-for="DepartureTime" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="LandingTime" class="form-label fw-semibold"></label>
-                    <input asp-for="LandingTime" type="datetime-local" class="form-control" />
+                    <input asp-for="LandingTime"
+                           type="datetime-local"
+                           class="form-control"
+                           value="@Model.LandingTime.ToString("yyyy-MM-ddTHH:mm")" />
                     <span asp-validation-for="LandingTime" class="text-danger small"></span>
                 </div>
             </div>

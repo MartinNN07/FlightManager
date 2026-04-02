@@ -21,30 +21,48 @@
             <dd class="col-sm-7">@Model.ContactEmail</dd>
 
             <dt class="col-sm-5">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
-            <dd class="col-sm-7">@Model.CreatedAt.ToString("g")</dd>
+            <dd class="col-sm-7">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</dd>
 
             <dt class="col-sm-5">@Html.DisplayNameFor(m => m.FlightId)</dt>
-            <dd class="col-sm-7">@Model.FlightId</dd>
+            <dd class="col-sm-7">
+                <a asp-controller="Flights" asp-action="Details" asp-route-id="@Model.FlightId">
+                    @Model.FlightId
+                </a>
+            </dd>
 
             <dt class="col-sm-5">@Html.DisplayNameFor(m => m.SeatClass)</dt>
-            <dd class="col-sm-7">@Model.SeatClass</dd>
+            <dd class="col-sm-7">
+                @if (Model.SeatClass == FlightManager.Data.Models.SeatingClass.Business)
+                {
+                    <span class="badge bg-warning text-dark">Бизнес</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Икономична</span>
+                }
+            </dd>
         </dl>
     </div>
 
-    <div class="col-md-6">
-        <h4>@Html.DisplayNameFor(m => m.PassengerNames)</h4>
-        @if (Model.PassengerNames == null || !Model.PassengerNames.Any())
-        {
-            <div class="text-muted">Няма прикачени пътници към тази резервация.</div>
-        }
-        else
-        {
-            <ul class="list-group">
-                @foreach (var passenger in Model.PassengerNames)
-                {
-                    <li class="list-group-item">@passenger</li>
-                }
-            </ul>
-        }
-    </div>
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <div class="col-md-6">
+            <h4>@Html.DisplayNameFor(m => m.PassengerNames) (@(Model.PassengerNames?.Count ?? 0))</h4>
+            @if (Model.PassengerNames == null || !Model.PassengerNames.Any())
+            {
+                <div class="text-muted">Няма прикачени пътници към тази резервация.</div>
+            }
+            else
+            {
+                <ul class="list-group">
+                    @foreach (var passenger in Model.PassengerNames)
+                    {
+                        <li class="list-group-item">
+                            <i class="bi bi-person-fill me-2 text-muted"></i>@passenger
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
 </div>

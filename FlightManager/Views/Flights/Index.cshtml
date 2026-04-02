@@ -5,6 +5,7 @@
     int totalPages = (int)ViewBag.TotalPages;
     int totalCount = (int)ViewBag.TotalCount;
     bool isAdmin = User.IsInRole("Admin");
+    bool isAuthenticated = User.Identity!.IsAuthenticated;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -152,7 +153,8 @@
                         <a asp-action="Details" asp-route-id="@f.FlightNumber"
                            class="btn btn-sm btn-outline-info">Детайли</a>
 
-                        @if (!isAdmin)
+                        @* Only guests (unauthenticated) can reserve *@
+                        @if (!isAuthenticated)
                         {
                             <a asp-controller="Reservations" asp-action="Create"
                                asp-route-flightId="@f.FlightNumber"

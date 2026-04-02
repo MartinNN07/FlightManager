@@ -2,6 +2,7 @@
 using FlightManager.Services.Services.Interfaces;
 using FlightManager.Web.Mappers;
 using FlightManager.Web.ViewModels.Reservations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
@@ -27,7 +28,8 @@ namespace FlightManager.Web.Controllers
             _emailService = emailService;
         }
 
-        // GET: Reservations
+        // GET: Reservations — only authenticated users
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var reservations = await _reservationService.GetAllReservationsAsync();
@@ -35,7 +37,8 @@ namespace FlightManager.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: Reservations/Details/5
+        // GET: Reservations/Details/5 — only authenticated users
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -50,9 +53,15 @@ namespace FlightManager.Web.Controllers
             return View(viewModel);
         }
 
-        // GET: Reservations/Create?flightId=FB101
+        // GET: Reservations/Create?flightId=FB101 — only guests (unauthenticated)
         public async Task<IActionResult> Create(string? flightId)
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                TempData["Error"] = "Влезлите потребители не могат да правят резервации. Резервациите са само за гости.";
+                return RedirectToAction("Index", "Flights");
+            }
+
             var viewModel = new ReservationCreateViewModel();
 
             if (!string.IsNullOrWhiteSpace(flightId))
@@ -73,11 +82,17 @@ namespace FlightManager.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: Reservations/Create
+        // POST: Reservations/Create — only guests (unauthenticated)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ReservationCreateViewModel viewModel)
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                TempData["Error"] = "Влезлите потребители не могат да правят резервации. Резервациите са само за гости.";
+                return RedirectToAction("Index", "Flights");
+            }
+
             var flight = await _flightService.GetFlightByNumberAsync(viewModel.FlightId);
 
             if (flight == null)
@@ -94,14 +109,12 @@ namespace FlightManager.Web.Controllers
 
                 int requestedSeats = viewModel.Passengers.Count;
 
-                if (viewModel.SeatClass == FlightManager.Data.Models.SeatingClass.Economy
-                    && requestedSeats > flight.AvailableEconomySeats)
+                if (viewModel.SeatClass == SeatingClass.Economy && requestedSeats > flight.AvailableEconomySeats)
                 {
                     ModelState.AddModelError(nameof(viewModel.SeatClass),
                         $"Недостатъчно места в икономична класа. Свободни: {flight.AvailableEconomySeats}.");
                 }
-                else if (viewModel.SeatClass == FlightManager.Data.Models.SeatingClass.Business
-                    && requestedSeats > flight.AvailableBusinessSeats)
+                else if (viewModel.SeatClass == SeatingClass.Business && requestedSeats > flight.AvailableBusinessSeats)
                 {
                     ModelState.AddModelError(nameof(viewModel.SeatClass),
                         $"Недостатъчно места в бизнес класа. Свободни: {flight.AvailableBusinessSeats}.");
@@ -141,7 +154,6 @@ namespace FlightManager.Web.Controllers
                     }
 
                     passengers.Add(passenger);
-
                     passengerNames.Add($"{passenger.FirstName} {passenger.MiddleName} {passenger.LastName}");
                 }
 
@@ -151,8 +163,7 @@ namespace FlightManager.Web.Controllers
 
                 try
                 {
-                    string seatClassLabel = viewModel.SeatClass == SeatingClass.Business
-                        ? "Бизнес" : "Икономична";
+                    string seatClassLabel = viewModel.SeatClass == SeatingClass.Business ? "Бизнес" : "Икономична";
 
                     /*await _emailService.SendReservationConfirmationAsync(
                         toEmail: viewModel.ContactEmail,
@@ -169,7 +180,7 @@ namespace FlightManager.Web.Controllers
                 }
 
                 TempData["Success"] = "Резервацията беше създадена успешно! Изпратено е потвърждение на имейл.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Flights");
             }
 
             await PopulateFlightsDropDownAsync(viewModel.FlightId);
