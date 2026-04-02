@@ -30,10 +30,40 @@ namespace FlightManager.Web.Controllers
 
         // GET: Reservations — only authenticated users
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? filterEmail,
+            int pageSize = 10,
+            int page = 1)
         {
-            var reservations = await _reservationService.GetAllReservationsAsync();
-            var viewModels = ReservationMapper.ToIndexViewModelList(reservations);
+            if (pageSize != 10 && pageSize != 25 && pageSize != 50)
+                pageSize = 10;
+
+            var allReservations = await _reservationService.GetAllReservationsAsync();
+
+            if (!string.IsNullOrWhiteSpace(filterEmail))
+                allReservations = allReservations
+                    .Where(r => r.ContactEmail.Contains(filterEmail, StringComparison.OrdinalIgnoreCase));
+
+            var totalCount = allReservations.Count();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+
+            var paged = allReservations
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModels = ReservationMapper.ToIndexViewModelList(paged);
+
+            ViewBag.FilterEmail = filterEmail;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Page = page;
+            ViewBag.TotalCount = totalCount;
+            ViewBag.TotalPages = totalPages;
+
             return View(viewModels);
         }
 
