@@ -4,6 +4,7 @@ using FlightManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260401194525_AddedMultipleReservationsPerPassenger")]
+    partial class AddedMultipleReservationsPerPassenger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,9 +142,6 @@ namespace FlightManager.Data.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("EGN");
-
-                    b.HasIndex("EGN")
-                        .IsUnique();
 
                     b.ToTable("Passengers");
                 });
@@ -437,13 +437,13 @@ namespace FlightManager.Data.Migrations
                     b.HasOne("FlightManager.Data.Models.Airport", "DepartureAirport")
                         .WithMany("DepartingFlights")
                         .HasForeignKey("DepartureAirportIataCode")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("FlightManager.Data.Models.Airport", "LandingAirport")
                         .WithMany("ArrivingFlights")
                         .HasForeignKey("LandingAirportIataCode")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Airplane");

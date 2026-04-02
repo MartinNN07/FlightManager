@@ -7,7 +7,10 @@ namespace FlightManager.Data.Models
     public class Passenger
     {
         [Key]
-        public int Id { get; set; }
+        [Required(ErrorMessage = "ЕГН-то е задължително.")]
+        [EgnValidation]
+        [Display(Name = "ЕГН")]
+        public string EGN { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Собственото име е задължително.")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Собственото име трябва да е между 2 и 50 символа.")]
@@ -24,11 +27,6 @@ namespace FlightManager.Data.Models
         [Display(Name = "Фамилното име на пътника")]
         public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "ЕГН-то е задължително.")]
-        [EgnValidation]
-        [Display(Name = "ЕГН")]
-        public string EGN { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "Телефонният номер е задължителен.")]
         [Phone(ErrorMessage = "Невалиден телефонен номер.")]
         [StringLength(20)]
@@ -40,9 +38,6 @@ namespace FlightManager.Data.Models
         [Display(Name = "Националността на пътника")]
         public string Nationality { get; set; } = string.Empty;
 
-        [Required]
-        [ForeignKey(nameof(Reservation))]
-        public int ReservationId { get; set; }
-        public Reservation? Reservation { get; set; }
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }

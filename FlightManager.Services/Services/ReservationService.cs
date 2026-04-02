@@ -22,11 +22,14 @@ namespace FlightManager.Services.Services
         }
         public async Task<IEnumerable<Reservation>> GetAllReservationsAsync()
         {
-            return await _context.Reservations.ToListAsync();
+            return await _context.Reservations
+                                 .Include(r => r.Passengers)
+                                 .ToListAsync();
         }
         public async Task<Reservation?> GetreservationByIdAsync(int reservationId)
         {
-            return await _context.Reservations.FindAsync(reservationId);
+            return await _context.Reservations
+                .FindAsync(reservationId);
         }
         public async Task<Reservation?> GetreservationByContactEmailAsync(string contactEmail)
         {

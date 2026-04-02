@@ -1,281 +1,397 @@
-﻿@using FlightManager.Data.Models
-@model FlightManager.Web.ViewModels.Reservations.ReservationCreateViewModel
-
+﻿@model FlightManager.Web.ViewModels.Reservations.ReservationCreateViewModel
 @{
-    ViewData["Title"] = "Добави резервация";
-
-    if (Model.Passengers == null)
-    {
-        Model.Passengers = new List<FlightManager.Web.ViewModels.Reservations.PassengerInputModel>();
-    }
+    ViewData["Title"] = "Нова резервация";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>@ViewData["Title"]</h2>
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Назад към списъка
-    </a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>🎫 Нова резервация</h2>
+    <a asp-controller="Flights" asp-action="Index" class="btn btn-outline-secondary">← Назад към полетите</a>
 </div>
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Моля, коригирайте грешките по-долу.</strong>
+        <ul class="mb-0 mt-1">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
 <form asp-action="Create" method="post" id="reservationForm">
+    <input type="hidden" asp-for="DepartureCity" id="hiddenDepartureCity" />
+    <input type="hidden" asp-for="ArrivalCity" id="hiddenArrivalCity" />
+    <input type="hidden" asp-for="FlightDate" id="hiddenFlightDate" />
+    <input type="hidden" asp-for="AvailableEconomySeats" id="hiddenEconomySeats" />
+    <input type="hidden" asp-for="AvailableBusinessSeats" id="hiddenBusinessSeats" />
     @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-
-    @* ════ СЕКЦИЯ: ПОЛЕТ ════ *@
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <i class="bi bi-airplane-fill me-2"></i> Информация за полета
-        </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-bold">✈️ Информация за полета</div>
         <div class="card-body">
-
-            <div class="mb-3">
-                <label asp-for="FlightId" class="form-label fw-semibold"></label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label asp-for="FlightId" class="form-label fw-semibold"></label>
                     <select asp-for="FlightId"
                             asp-items="ViewBag.FlightId"
-                            class="form-select"
-                            id="flightSelect">
-                        <option value="">-- Изберете полет --</option>
+                            id="flightSelect"
+                            class="form-select @(ViewData.ModelState["FlightId"]?.Errors.Count > 0 ? "is-invalid" : "")">
+                        <option value="">— Изберете полет —</option>
                     </select>
+                    <span asp-validation-for="FlightId" class="invalid-feedback d-block"></span>
                 </div>
-                <span asp-validation-for="FlightId" class="text-danger small"></span>
-            </div>
 
-            <div id="flightInfo" class="row g-3 mt-1" style="display:none !important;">
-                <div class="col-md-4">
-                    <div class="p-3 border rounded bg-light text-center">
-                        <div class="text-muted small mb-1"><i class="bi bi-geo-alt-fill text-primary"></i> Град на излитане</div>
-                        <div class="fw-bold" id="departureCity">—</div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted small">От</label>
+                    <div id="displayDepartureCity" class="form-control-plaintext fw-bold fs-5">
+                        @(Model.DepartureCity ?? "—")
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="p-3 border rounded bg-light text-center">
-                        <div class="text-muted small mb-1"><i class="bi bi-geo-fill text-danger"></i> Град на кацане</div>
-                        <div class="fw-bold" id="arrivalCity">—</div>
+
+                <div class="col-md-1 text-center pb-1">
+                    <span class="fs-4">→</span>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted small">До</label>
+                    <div id="displayArrivalCity" class="form-control-plaintext fw-bold fs-5">
+                        @(Model.ArrivalCity ?? "—")
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="p-3 border rounded bg-light text-center">
-                        <div class="text-muted small mb-1"><i class="bi bi-calendar-event text-success"></i> Дата на полета</div>
-                        <div class="fw-bold" id="flightDate">—</div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted small">Дата и час на излитане</label>
+                    <div id="displayFlightDate" class="form-control-plaintext text-muted">
+                        @(Model.FlightDate.HasValue? Model.FlightDate.Value.ToString("dd.MM.yyyy HH:mm") : "—")
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    @* ════ СЕКЦИЯ: РЕЗЕРВАЦИЯ ════ *@
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-secondary text-white">
-            <i class="bi bi-ticket-perforated-fill me-2"></i> Детайли на резервацията
-        </div>
-        <div class="card-body row g-3">
-
-            <div class="col-md-6">
-                <label asp-for="SeatClass" class="form-label fw-semibold"></label>
-                <div class="d-flex gap-3 mt-1">
-                    <div class="form-check form-check-inline">
-                        @* FIXED: Removed the manual C# 'checked' attribute. asp-for does this automatically *@
-                        <input class="form-check-input" type="radio" asp-for="SeatClass"
-                               id="seatEconomy" value="@SeatingClass.Economy" />
-                        <label class="form-check-label" for="seatEconomy">
-                            <i class="bi bi-person-seat me-1"></i> Икономична
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        @* FIXED: Removed the manual C# 'checked' attribute. asp-for does this automatically *@
-                        <input class="form-check-input" type="radio" asp-for="SeatClass"
-                               id="seatBusiness" value="@SeatingClass.Business" />
-                        <label class="form-check-label" for="seatBusiness">
-                            <i class="bi bi-star-fill me-1 text-warning"></i> Бизнес
-                        </label>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-bold">💺 Клас на седалката</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div id="economyCard"
+                         class="card h-100 border-2 @(Model.SeatClass == FlightManager.Data.Models.SeatingClass.Economy ? "border-primary" : "border-light") seat-card"
+                         data-class="0"
+                         role="button"
+                         style="cursor:pointer">
+                        <div class="card-body text-center">
+                            <div class="fs-1">🪑</div>
+                            <h5 class="mt-2">Икономична класа</h5>
+                            <p class="mb-1 text-muted small">Свободни места:</p>
+                            <span id="economyBadge"
+                                  class="badge @(Model.AvailableEconomySeats > 0 ? "bg-success" : "bg-danger") fs-6">
+                                @Model.AvailableEconomySeats
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <span asp-validation-for="SeatClass" class="text-danger small"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="ContactEmail" class="form-label fw-semibold"></label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                    <input asp-for="ContactEmail" class="form-control" type="email" placeholder="example@mail.com" />
+                <div class="col-md-6">
+                    <div id="businessCard"
+                         class="card h-100 border-2 @(Model.SeatClass == FlightManager.Data.Models.SeatingClass.Business ? "border-primary" : "border-light") seat-card"
+                         data-class="1"
+                         role="button"
+                         style="cursor:pointer">
+                        <div class="card-body text-center">
+                            <div class="fs-1">🛋️</div>
+                            <h5 class="mt-2">Бизнес класа</h5>
+                            <p class="mb-1 text-muted small">Свободни места:</p>
+                            <span id="businessBadge"
+                                  class="badge @(Model.AvailableBusinessSeats > 0 ? "bg-success" : "bg-danger") fs-6">
+                                @Model.AvailableBusinessSeats
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <span asp-validation-for="ContactEmail" class="text-danger small"></span>
             </div>
 
+            <input type="hidden" asp-for="SeatClass" id="seatClassInput" />
+            <span asp-validation-for="SeatClass" class="text-danger"></span>
+
+            <div id="seatWarning" class="alert alert-warning mt-3 d-none">
+                ⚠️ Няма достатъчно свободни места в избраната класа за броя пътници.
+            </div>
         </div>
     </div>
 
-    @* ════ СЕКЦИЯ: ПЪТНИЦИ ════ *@
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <span><i class="bi bi-people-fill me-2"></i> Пътници</span>
-            <button type="button" class="btn btn-sm btn-light text-success fw-semibold" id="addPassengerBtn">
-                <i class="bi bi-person-plus-fill me-1"></i> Добави пътник
-            </button>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-bold">📧 Имейл за контакт</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="ContactEmail" class="form-label fw-semibold"></label>
+                    <input asp-for="ContactEmail"
+                           class="form-control @(ViewData.ModelState["ContactEmail"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           placeholder="example@email.com" />
+                    <span asp-validation-for="ContactEmail" class="invalid-feedback"></span>
+                    <div class="form-text">На този имейл ще получите потвърждение за резервацията.</div>
+                </div>
+            </div>
         </div>
-        <div class="card-body" id="passengersContainer">
-            @if (Model.Passengers is not null)
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+            <span>👤 Пътници</span>
+            <span id="passengerCount" class="badge bg-primary">1</span>
+        </div>
+        <div class="card-body">
+            <div id="passengersContainer">
+                @for (int i = 0; i < Model.Passengers.Count; i++)
                 {
-                    @for (int i = 0; i < Model.Passengers.Count; i++)
-            {
-                <div class="passenger-entry border rounded p-3 mb-3 bg-light position-relative" data-index="@i">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0 text-success"><i class="bi bi-person-badge me-2"></i>Пътник <span class="passenger-number">@(i + 1)</span></h6>
+                    <div class="passenger-block border rounded p-3 mb-3 position-relative" data-index="@i">
+                        <h6 class="text-muted mb-3">Пътник #<span class="passenger-num">@(i + 1)</span></h6>
+
                         @if (i > 0)
                         {
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-passenger">
-                                <i class="bi bi-trash3"></i> Премахни
-                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 remove-passenger">✕</button>
                         }
+
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Собствено име *</label>
+                                <input name="Passengers[@i].FirstName"
+                                       value="@Model.Passengers[i].FirstName"
+                                       class="form-control form-control-sm passenger-field"
+                                       placeholder="Собствено" required minlength="2" maxlength="50" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Бащино име *</label>
+                                <input name="Passengers[@i].MiddleName"
+                                       value="@Model.Passengers[i].MiddleName"
+                                       class="form-control form-control-sm passenger-field"
+                                       placeholder="Бащино" required minlength="2" maxlength="50" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Фамилно ime *</label>
+                                <input name="Passengers[@i].LastName"
+                                       value="@Model.Passengers[i].LastName"
+                                       class="form-control form-control-sm passenger-field"
+                                       placeholder="Фамилно" required minlength="2" maxlength="50" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">ЕГН *</label>
+                                <input name="Passengers[@i].EGN"
+                                       value="@Model.Passengers[i].EGN"
+                                       class="form-control form-control-sm passenger-field"
+                                       placeholder="ЕГН" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold">Телефон *</label>
+                                <input name="Passengers[@i].PhoneNumber"
+                                       value="@Model.Passengers[i].PhoneNumber"
+                                       class="form-control form-control-sm passenger-field"
+                                       placeholder="+359..." required maxlength="20" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Националност *</label>
+                                <input name="Passengers[@i].Nationality"
+                                       value="@Model.Passengers[i].Nationality"
+                                       class="form-control form-control-sm passenger-field"
+                                       placeholder="Например: Българска" required minlength="2" maxlength="60" />
+                            </div>
+                        </div>
                     </div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Собствено име <span class="text-danger">*</span></label>
-                            <input name="Passengers[@i].FirstName" class="form-control"
-                                   value="@Model.Passengers[i].FirstName" placeholder="Иван" />
-                            <span class="text-danger small field-validation-valid"
-                                  data-valmsg-for="Passengers[@i].FirstName"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Бащино име <span class="text-danger">*</span></label>
-                            <input name="Passengers[@i].MiddleName" class="form-control"
-                                   value="@Model.Passengers[i].MiddleName" placeholder="Петров" />
-                            <span class="text-danger small field-validation-valid"
-                                  data-valmsg-for="Passengers[@i].MiddleName"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Фамилно име <span class="text-danger">*</span></label>
-                            <input name="Passengers[@i].LastName" class="form-control"
-                                   value="@Model.Passengers[i].LastName" placeholder="Георгиев" />
-                            <span class="text-danger small field-validation-valid"
-                                  data-valmsg-for="Passengers[@i].LastName"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">ЕГН <span class="text-danger">*</span></label>
-                            <input name="Passengers[@i].EGN" class="form-control"
-                                   value="@Model.Passengers[i].EGN" placeholder="0000000000" maxlength="10" />
-                            <span class="text-danger small field-validation-valid"
-                                  data-valmsg-for="Passengers[@i].EGN"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Телефонен номер <span class="text-danger">*</span></label>
-                            <input name="Passengers[@i].PhoneNumber" class="form-control"
-                                   value="@Model.Passengers[i].PhoneNumber" placeholder="+359 88 888 8888" />
-                            <span class="text-danger small field-validation-valid"
-                                  data-valmsg-for="Passengers[@i].PhoneNumber"></span>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Националност <span class="text-danger">*</span></label>
-                            <input name="Passengers[@i].Nationality" class="form-control"
-                                   value="@Model.Passengers[i].Nationality" placeholder="Българска" />
-                            <span class="text-danger small field-validation-valid"
-                                  data-valmsg-for="Passengers[@i].Nationality"></span>
-                        </div>
-                    </div>
-                </div>
-            }
                 }
             </div>
+
+            <button type="button" id="addPassenger" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Добави пътник
+            </button>
+        </div>
     </div>
 
-    <div class="d-flex gap-2 mb-5">
-        <button type="submit" class="btn btn-primary px-4">
-            <i class="bi bi-plus-lg me-1"></i> Създай резервация
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success btn-lg px-5" id="submitBtn">
+            ✅ Потвърди резервацията
         </button>
-        <a asp-action="Index" class="btn btn-outline-secondary">Отказ</a>
+        <a asp-controller="Flights" asp-action="Index" class="btn btn-outline-secondary btn-lg">Отказ</a>
     </div>
-
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
     <script>
-        // ── Flight info lookup ──────────────────────────────────────────────────
-        const flightData = @Html.Raw(ViewBag.FlightsJson ?? "{}");
+        const flightsData = @Html.Raw(ViewBag.FlightsJson ?? "{}");
 
-        document.getElementById('flightSelect').addEventListener('change', function () {
-            const id = this.value;
-            const info = flightData[id];
-            const panel = document.getElementById('flightInfo');
-            if (info) {
-                document.getElementById('departureCity').textContent = info.departureCity ?? '—';
-                document.getElementById('arrivalCity').textContent   = info.arrivalCity    ?? '—';
-                document.getElementById('flightDate').textContent    = info.flightDate     ?? '—';
-                panel.style.removeProperty('display');
-                panel.style.display = 'flex';
-            } else {
-                panel.style.display = 'none';
-            }
-        });
+        const flightSelect      = document.getElementById('flightSelect');
+        const seatClassInput    = document.getElementById('seatClassInput');
+        const economyCard       = document.getElementById('economyCard');
+        const businessCard      = document.getElementById('businessCard');
+        const economyBadge      = document.getElementById('economyBadge');
+        const businessBadge     = document.getElementById('businessBadge');
+        const seatWarning       = document.getElementById('seatWarning');
+        const passengerCountBadge = document.getElementById('passengerCount');
+        const passengersContainer = document.getElementById('passengersContainer');
+        const addPassengerBtn   = document.getElementById('addPassenger');
 
-        // ── Dynamic passengers ─────────────────────────────────────────────────
-        document.getElementById('addPassengerBtn').addEventListener('click', function () {
-            // Calculate count dynamically based on DOM instead of a static variable
-            const passengerCount = document.querySelectorAll('.passenger-entry').length;
-            const i = passengerCount;
-        
-            const html = `
-                <div class="passenger-entry border rounded p-3 mb-3 bg-light position-relative">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0 text-success"><i class="bi bi-person-badge me-2"></i>Пътник <span class="passenger-number">${i + 1}</span></h6>
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-passenger">
-                            <i class="bi bi-trash3"></i> Премахни
-                        </button>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Собствено име <span class="text-danger">*</span></label>
-                            <input name="Passengers[${i}].FirstName" class="form-control" placeholder="Иван" />
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Бащино име <span class="text-danger">*</span></label>
-                            <input name="Passengers[${i}].MiddleName" class="form-control" placeholder="Петров" />
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Фамилно име <span class="text-danger">*</span></label>
-                            <input name="Passengers[${i}].LastName" class="form-control" placeholder="Георгиев" />
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">ЕГН <span class="text-danger">*</span></label>
-                            <input name="Passengers[${i}].EGN" class="form-control" placeholder="0000000000" maxlength="10" />
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Телефонен номер <span class="text-danger">*</span></label>
-                            <input name="Passengers[${i}].PhoneNumber" class="form-control" placeholder="+359 88 888 8888" />
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Националност <span class="text-danger">*</span></label>
-                            <input name="Passengers[${i}].Nationality" class="form-control" placeholder="Българска" />
-                        </div>
-                    </div>
-                </div>`;
-
-            document.getElementById('passengersContainer').insertAdjacentHTML('beforeend', html);
-            renumberPassengers();
-        });
-
-        document.getElementById('passengersContainer').addEventListener('click', function (e) {
-            const btn = e.target.closest('.remove-passenger');
-            if (!btn) return;
-            btn.closest('.passenger-entry').remove();
-            renumberPassengers();
-        });
-
-        function renumberPassengers() {
-            document.querySelectorAll('.passenger-entry').forEach((el, idx) => {
-                el.querySelector('.passenger-number').textContent = idx + 1;
-                el.querySelectorAll('input').forEach(inp => {
-                    // Safely replaces any index like [0], [1], etc. with the correct current index
-                    inp.name = inp.name.replace(/\[\d+\]/, `[${idx}]`);
-                });
-            });
+        function selectSeatClass(value) {
+            seatClassInput.value = value;
+            economyCard.classList.toggle('border-primary', value === '0');
+            economyCard.classList.toggle('border-light',   value !== '0');
+            businessCard.classList.toggle('border-primary', value === '1');
+            businessCard.classList.toggle('border-light',   value !== '1');
+            checkSeatAvailability();
         }
+
+        economyCard.addEventListener('click',  () => selectSeatClass('0'));
+        businessCard.addEventListener('click', () => selectSeatClass('1'));
+
+        selectSeatClass('@((int)Model.SeatClass)');
+
+        flightSelect.addEventListener('change', function () {
+            const key  = this.value;
+            const data = flightsData[key];
+
+            if (data) {
+                document.getElementById('displayDepartureCity').textContent = data.departureCity;
+                document.getElementById('displayArrivalCity').textContent   = data.arrivalCity;
+                document.getElementById('displayFlightDate').textContent    = data.flightDate;
+
+                document.getElementById('hiddenDepartureCity').value  = data.departureCity;
+                document.getElementById('hiddenArrivalCity').value    = data.arrivalCity;
+                document.getElementById('hiddenFlightDate').value     = data.flightDate;
+                document.getElementById('hiddenEconomySeats').value   = data.availableEconomySeats;
+                document.getElementById('hiddenBusinessSeats').value  = data.availableBusinessSeats;
+
+                updateSeatBadges(data.availableEconomySeats, data.availableBusinessSeats);
+            } else {
+                document.getElementById('displayDepartureCity').textContent = '—';
+                document.getElementById('displayArrivalCity').textContent   = '—';
+                document.getElementById('displayFlightDate').textContent    = '—';
+                updateSeatBadges(0, 0);
+            }
+
+            checkSeatAvailability();
+        });
+
+        function updateSeatBadges(econ, biz) {
+            economyBadge.textContent = econ;
+            economyBadge.className   = 'badge fs-6 ' + (econ > 0 ? 'bg-success' : 'bg-danger');
+            businessBadge.textContent = biz;
+            businessBadge.className   = 'badge fs-6 ' + (biz > 0 ? 'bg-success' : 'bg-danger');
+        }
+
+        function checkSeatAvailability() {
+            const econAvail = parseInt(document.getElementById('hiddenEconomySeats').value) || 0;
+            const bizAvail  = parseInt(document.getElementById('hiddenBusinessSeats').value) || 0;
+            const passengers = passengersContainer.querySelectorAll('.passenger-block').length;
+            const isEcon     = seatClassInput.value === '0';
+            const available  = isEcon ? econAvail : bizAvail;
+
+            seatWarning.classList.toggle('d-none', passengers <= available || available === 0 && flightSelect.value === '');
+        }
+
+        function getPassengerCount() {
+            return passengersContainer.querySelectorAll('.passenger-block').length;
+        }
+
+        function reindex() {
+            const blocks = passengersContainer.querySelectorAll('.passenger-block');
+            blocks.forEach((block, i) => {
+                block.dataset.index = i;
+                block.querySelector('.passenger-num').textContent = i + 1;
+
+                block.querySelectorAll('input').forEach(input => {
+                    input.name = input.name.replace(/Passengers\[\d+\]/, `Passengers[${i}]`);
+                });
+
+                const removeBtn = block.querySelector('.remove-passenger');
+                if (removeBtn) removeBtn.remove();
+
+                if (i > 0) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 remove-passenger';
+                    btn.textContent = '✕';
+                    btn.addEventListener('click', () => {
+                        block.remove();
+                        reindex();
+                        passengerCountBadge.textContent = getPassengerCount();
+                        checkSeatAvailability();
+                    });
+                    block.appendChild(btn);
+                }
+            });
+            passengerCountBadge.textContent = getPassengerCount();
+        }
+
+        addPassengerBtn.addEventListener('click', function () {
+            const idx = getPassengerCount();
+
+            const econAvail = parseInt(document.getElementById('hiddenEconomySeats').value) || 0;
+            const bizAvail  = parseInt(document.getElementById('hiddenBusinessSeats').value) || 0;
+            const isEcon    = seatClassInput.value === '0';
+            const available = isEcon ? econAvail : bizAvail;
+
+            if (idx >= available && available > 0) {
+                seatWarning.classList.remove('d-none');
+                return;
+            }
+
+            const template = `
+            <div class="passenger-block border rounded p-3 mb-3 position-relative" data-index="${idx}">
+                <h6 class="text-muted mb-3">Пътник #<span class="passenger-num">${idx + 1}</span></h6>
+                <button type="button" class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 remove-passenger">✕</button>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Собствено ime *</label>
+                        <input name="Passengers[${idx}].FirstName" class="form-control form-control-sm passenger-field"
+                               placeholder="Собствено" required minlength="2" maxlength="50" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Бащино ime *</label>
+                        <input name="Passengers[${idx}].MiddleName" class="form-control form-control-sm passenger-field"
+                               placeholder="Бащино" required minlength="2" maxlength="50" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Фамилно ime *</label>
+                        <input name="Passengers[${idx}].LastName" class="form-control form-control-sm passenger-field"
+                               placeholder="Фамилно" required minlength="2" maxlength="50" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">ЕГН *</label>
+                        <input name="Passengers[${idx}].EGN" class="form-control form-control-sm passenger-field"
+                               placeholder="ЕГН" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Телефон *</label>
+                        <input name="Passengers[${idx}].PhoneNumber" class="form-control form-control-sm passenger-field"
+                               placeholder="+359..." required maxlength="20" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Националност *</label>
+                        <input name="Passengers[${idx}].Nationality" class="form-control form-control-sm passenger-field"
+                               placeholder="Например: Българска" required minlength="2" maxlength="60" />
+                    </div>
+                </div>
+            </div>`;
+
+            passengersContainer.insertAdjacentHTML('beforeend', template);
+
+            const newBlock = passengersContainer.lastElementChild;
+            newBlock.querySelector('.remove-passenger').addEventListener('click', () => {
+                newBlock.remove();
+                reindex();
+                checkSeatAvailability();
+            });
+
+            passengerCountBadge.textContent = getPassengerCount();
+            checkSeatAvailability();
+        });
+
+        passengersContainer.querySelectorAll('.remove-passenger').forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.closest('.passenger-block').remove();
+                reindex();
+                checkSeatAvailability();
+            });
+        });
     </script>
 }

@@ -4,6 +4,7 @@ using FlightManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightManager.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260401143634_UpdatedPassenger")]
+    partial class UpdatedPassenger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,10 +141,15 @@ namespace FlightManager.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("int");
+
                     b.HasKey("EGN");
 
                     b.HasIndex("EGN")
                         .IsUnique();
+
+                    b.HasIndex("ReservationId");
 
                     b.ToTable("Passengers");
                 });
@@ -382,21 +390,6 @@ namespace FlightManager.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PassengerReservation", b =>
-                {
-                    b.Property<string>("PassengersEGN")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ReservationsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PassengersEGN", "ReservationsId");
-
-                    b.HasIndex("ReservationsId");
-
-                    b.ToTable("PassengerReservations", (string)null);
-                });
-
             modelBuilder.Entity("FlightManager.Data.Models.User", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -437,13 +430,13 @@ namespace FlightManager.Data.Migrations
                     b.HasOne("FlightManager.Data.Models.Airport", "DepartureAirport")
                         .WithMany("DepartingFlights")
                         .HasForeignKey("DepartureAirportIataCode")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("FlightManager.Data.Models.Airport", "LandingAirport")
                         .WithMany("ArrivingFlights")
                         .HasForeignKey("LandingAirportIataCode")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Airplane");
@@ -451,6 +444,17 @@ namespace FlightManager.Data.Migrations
                     b.Navigation("DepartureAirport");
 
                     b.Navigation("LandingAirport");
+                });
+
+            modelBuilder.Entity("FlightManager.Data.Models.Passenger", b =>
+                {
+                    b.HasOne("FlightManager.Data.Models.Reservation", "Reservation")
+                        .WithMany("Passengers")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("FlightManager.Data.Models.Reservation", b =>
@@ -515,21 +519,6 @@ namespace FlightManager.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PassengerReservation", b =>
-                {
-                    b.HasOne("FlightManager.Data.Models.Passenger", null)
-                        .WithMany()
-                        .HasForeignKey("PassengersEGN")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FlightManager.Data.Models.Reservation", null)
-                        .WithMany()
-                        .HasForeignKey("ReservationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FlightManager.Data.Models.Airport", b =>
                 {
                     b.Navigation("ArrivingFlights");
@@ -540,6 +529,11 @@ namespace FlightManager.Data.Migrations
             modelBuilder.Entity("FlightManager.Data.Models.Flight", b =>
                 {
                     b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("FlightManager.Data.Models.Reservation", b =>
+                {
+                    b.Navigation("Passengers");
                 });
 #pragma warning restore 612, 618
         }

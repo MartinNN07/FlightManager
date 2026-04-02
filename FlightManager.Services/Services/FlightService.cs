@@ -51,6 +51,7 @@ namespace FlightManager.Services.Services
                 .Include(f => f.DepartureAirport)
                 .Include(f => f.LandingAirport)
                 .Include(f => f.Airplane)
+                .Include(f => f.Reservations)
                 .ToListAsync();
         }
 
@@ -60,6 +61,7 @@ namespace FlightManager.Services.Services
                 .Include(f => f.DepartureAirport)
                 .Include(f => f.LandingAirport)
                 .Include(f => f.Airplane)
+                .Include(f => f.Reservations)
                 .FirstOrDefaultAsync(f => f.FlightNumber == flightNumber);
         }
 
@@ -69,6 +71,7 @@ namespace FlightManager.Services.Services
                 .Include(f => f.DepartureAirport)
                 .Include(f => f.LandingAirport)
                 .Include(f => f.Airplane)
+                .Include(f => f.Reservations)
                 .Where(f => f.DepartureTime >= startDate && f.DepartureTime <= endDate)
                 .ToListAsync();
         }
@@ -79,6 +82,7 @@ namespace FlightManager.Services.Services
                     .Include(f => f.DepartureAirport)
                     .Include(f => f.LandingAirport)
                     .Include(f => f.Airplane)
+                    .Include(f => f.Reservations)
                     .Where(f => f.LandingAirportIataCode == arrivalAirportIataCode)
                     .ToListAsync();
         }
@@ -89,6 +93,7 @@ namespace FlightManager.Services.Services
                     .Include(f => f.DepartureAirport)
                     .Include(f => f.LandingAirport)
                     .Include(f => f.Airplane)
+                    .Include(f => f.Reservations)
                     .Where(f => f.DepartureAirportIataCode == departureAirportIataCode)
                     .ToListAsync();
         }
@@ -119,6 +124,7 @@ namespace FlightManager.Services.Services
                 .Include(f => f.DepartureAirport)
                 .Include(f => f.LandingAirport)
                 .Include(f => f.Airplane)
+                .Include(f => f.Reservations)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(departureTerm))

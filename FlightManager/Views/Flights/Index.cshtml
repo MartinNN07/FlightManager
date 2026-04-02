@@ -40,7 +40,7 @@
                            autocomplete="off" />
                 </div>
             </div>
-            
+
             <div class="col-md-3 position-relative">
                 <label class="form-label small fw-semibold">До</label>
                 <div class="input-group input-group-sm">
@@ -58,7 +58,7 @@
                 <label class="form-label small fw-semibold">Дата</label>
                 <input name="date" value="@ViewBag.Date" type="date" class="form-control form-control-sm" />
             </div>
-            
+
             <div class="col-md-2">
                 <label class="form-label small fw-semibold">Сортиране</label>
                 <select name="sortBy" id="sortBySelect" class="form-select form-select-sm">
@@ -68,7 +68,7 @@
                     <option value="to" selected="@(ViewBag.SortBy == "to")">По дестинация</option>
                 </select>
             </div>
-            
+
             <div class="col-md-1">
                 <label class="form-label small fw-semibold">Записи</label>
                 <select name="pageSize" id="pageSizeSelect" class="form-select form-select-sm">
@@ -78,12 +78,12 @@
                     }
                 </select>
             </div>
-            
+
             <div class="col-md-1 d-flex gap-1">
                 <button type="submit" class="btn btn-primary btn-sm flex-grow-1">🔍</button>
                 <a asp-action="Index" class="btn btn-outline-secondary btn-sm" title="Изчисти филтрите">✕</a>
             </div>
-            
+
         </form>
     </div>
 </div>
@@ -148,9 +148,17 @@
                             <span class="badge bg-danger">0</span>
                         }
                     </td>
-                    <td>
+                    <td class="text-nowrap">
                         <a asp-action="Details" asp-route-id="@f.FlightNumber"
                            class="btn btn-sm btn-outline-info">Детайли</a>
+
+                        @if (!isAdmin)
+                        {
+                            <a asp-controller="Reservations" asp-action="Create"
+                               asp-route-flightId="@f.FlightNumber"
+                               class="btn btn-sm btn-success ms-1">🎫 Резервирай</a>
+                        }
+
                         @if (isAdmin)
                         {
                             <a asp-action="Edit" asp-route-id="@f.FlightNumber"

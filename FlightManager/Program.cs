@@ -14,20 +14,20 @@ namespace FlightManager
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             // Register the DbContext with the connection string from configuration
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            //Register services
+            // Register services
             builder.Services.AddScoped<IAirplaneService, AirplaneService>();
             builder.Services.AddScoped<IAirportService, AirportService>();
             builder.Services.AddScoped<IFlightService, FlightService>();
             builder.Services.AddScoped<IPassengerService, PassengerService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
-            //Set up Identity Users
+            // Set up Identity Users
             builder.Services.AddIdentity<User, IdentityRole>(options => {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequiredLength = 6;
@@ -57,7 +57,6 @@ namespace FlightManager
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

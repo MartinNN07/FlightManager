@@ -1,9 +1,14 @@
-﻿using FlightManager.Data.Models;
-
-namespace FlightManager.Services.Services.Interfaces
+﻿namespace FlightManager.Services.Services.Interfaces
 {
     public interface IEmailService
     {
-        Task SendReservationConfirmationAsync(Reservation reservation, Flight flight);
+        Task SendReservationConfirmationAsync(
+            string toEmail,
+            string flightNumber,
+            string departureCity,
+            string arrivalCity,
+            DateTime departureTime,
+            string seatClass,
+            IEnumerable<string> passengerNames);
     }
 }

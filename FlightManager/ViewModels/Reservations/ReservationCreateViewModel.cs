@@ -7,7 +7,7 @@ namespace FlightManager.Web.ViewModels.Reservations
     {
         public ReservationCreateViewModel()
         {
-            Passengers = new List<PassengerInputModel>();
+            Passengers = new List<PassengerInputModel> { new PassengerInputModel() };
         }
 
         [Required(ErrorMessage = "Номерът на полета е задължителен.")]
@@ -23,6 +23,9 @@ namespace FlightManager.Web.ViewModels.Reservations
         [Display(Name = "Дата на полета")]
         public DateTime? FlightDate { get; set; }
 
+        public int AvailableEconomySeats { get; set; }
+        public int AvailableBusinessSeats { get; set; }
+
         [Required(ErrorMessage = "Класът на седалката е задължителен.")]
         [Display(Name = "Клас на седалка")]
         public SeatingClass SeatClass { get; set; } = SeatingClass.Economy;
@@ -32,7 +35,7 @@ namespace FlightManager.Web.ViewModels.Reservations
         [Display(Name = "Имейл за контакт")]
         public string ContactEmail { get; set; } = string.Empty;
 
-        public List<PassengerInputModel> Passengers { get; set; } = new List<PassengerInputModel> { new PassengerInputModel() };
+        public List<PassengerInputModel> Passengers { get; set; }
     }
 
     public class PassengerInputModel

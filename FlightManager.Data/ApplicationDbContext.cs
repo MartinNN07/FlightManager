@@ -27,20 +27,20 @@ namespace FlightManager.Data
                 .HasOne(f => f.DepartureAirport)
                 .WithMany(a => a.DepartingFlights)
                 .HasForeignKey(f => f.DepartureAirportIataCode)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<Flight>()
-                .HasOne(f => f.LandingAirport)
-                .WithMany(a => a.ArrivingFlights)
-                .HasForeignKey(f => f.LandingAirportIataCode)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Passenger>()
+                .HasMany(p => p.Reservations)
+                .WithMany(r => r.Passengers)
+                .UsingEntity(j => j.ToTable("PassengerReservations"));
+        
 
             // ensure EGN is unique
-            builder.Entity<Passenger>()
-                .HasIndex(p => p.EGN)
-                .IsUnique();
-
             builder.Entity<User>()
+                    .HasIndex(u => u.EGN)
+                    .IsUnique();
+
+            builder.Entity<Passenger>()
                 .HasIndex(p => p.EGN)
                 .IsUnique();
         }
