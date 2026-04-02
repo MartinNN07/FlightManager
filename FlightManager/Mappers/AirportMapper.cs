@@ -42,20 +42,6 @@ namespace FlightManager.Web.Mappers
                 AirportName = airport.AirportName
             };
         }
-
-        public static AirportDeleteViewModel ToDeleteViewModel(Airport airport)
-        {
-            return new AirportDeleteViewModel
-            {
-                IataCode = airport.IataCode,
-                Country = airport.Country,
-                City = airport.City,
-                AirportName = airport.AirportName,
-                DepartingFlightsCount = airport.DepartingFlights?.Count ?? 0,
-                ArrivingFlightsCount = airport.ArrivingFlights?.Count ?? 0
-            };
-        }
-
         public static Airport ToModel(AirportCreateViewModel viewModel)
         {
             return new Airport

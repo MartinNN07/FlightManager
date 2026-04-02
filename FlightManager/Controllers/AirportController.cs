@@ -99,35 +99,5 @@ namespace FlightManager.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // GET: Airports/Delete/SOF
-        [HttpGet]
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id)) return BadRequest();
-
-            Airport? airport = await _airportService.GetAirportByIataCodeAsync(id);
-            if (airport is null) return NotFound();
-
-            return View(AirportMapper.ToDeleteViewModel(airport));
-        }
-
-        // POST: Airports/Delete/SOF
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            try
-            {
-                await _airportService.DeleteAirportAsync(id);
-                TempData["Success"] = $"Летище с код '{id}' беше изтрито успешно.";
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

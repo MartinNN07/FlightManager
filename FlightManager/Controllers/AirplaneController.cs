@@ -99,37 +99,5 @@ namespace FlightManager.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // DELETE (GET)
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id)) return BadRequest();
-
-            Airplane? airplane = await _airplaneService.GetAirplaneByIdAsync(id);
-            if (airplane is null) return NotFound();
-
-            return View(AirplaneMapper.ToDeleteViewModel(airplane));
-        }
-
-        // DELETE (POST)
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            try
-            {
-                await _airplaneService.DeleteAirplaneAsync(id);
-                TempData["Success"] = "Самолетът беше изтрит успешно.";
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

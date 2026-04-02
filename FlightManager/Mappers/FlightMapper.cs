@@ -98,16 +98,5 @@ namespace FlightManager.Web.Mappers
                 LandingTime = flight.LandingTime
             };
         }
-
-        public static FlightDeleteViewModel ToDeleteViewModel(Flight flight)
-        {
-            return new FlightDeleteViewModel
-            {
-                FlightNumber = flight.FlightNumber,
-                DepartureCity = flight.DepartureAirport.City,
-                LandingCity = flight.LandingAirport.City,
-                DepartureTime = flight.DepartureTime
-            };
-        }
     }
 }

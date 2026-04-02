@@ -43,17 +43,6 @@ namespace FlightManager.Web.Mappers
                 BusinessClassSeats = airplane.BusinessClassSeats
             };
         }
-
-        public static AirplaneDeleteViewModel ToDeleteViewModel(Airplane airplane)
-        {
-            return new AirplaneDeleteViewModel
-            {
-                Id = airplane.Id,
-                Model = airplane.Model,
-                EconomyClassSeats = airplane.EconomyClassSeats,
-                BusinessClassSeats = airplane.BusinessClassSeats
-            };
-        }
         public static Airplane ToModel(AirplaneCreateViewModel viewModel)
         {
             return new Airplane

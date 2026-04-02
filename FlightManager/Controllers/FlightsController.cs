@@ -265,38 +265,6 @@ namespace FlightManager.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // DELETE (GET) — Admin only
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id)) return BadRequest();
-
-            var flight = await _flightService.GetFlightByNumberAsync(id);
-            if (flight is null) return NotFound();
-
-            return View(FlightMapper.ToDeleteViewModel(flight));
-        }
-
-        // DELETE (POST) — Admin only
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            try
-            {
-                await _flightService.DeleteFlightAsync(id);
-                TempData["Success"] = $"Полет {id} беше изтрит успешно.";
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
         private async Task PopulateDropdownsAsync(
             string? selectedAirport = null,
             string? selectedAirplane = null)
