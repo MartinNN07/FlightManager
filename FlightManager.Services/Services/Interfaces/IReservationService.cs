@@ -20,7 +20,7 @@ namespace FlightManager.Services.Services.Interfaces
         /// <param name="id">The unique identifier of the reservation to retrieve. Must be an int. </param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the reservation with the specified
         /// identifier, or null if no matching reservation is found.</returns>
-        Task<Reservation?> GetreservationByIdAsync(int reservationId);
+        Task<Reservation?> GetReservationByIdAsync(int reservationId);
 
         /// <summary>
         /// Asynchronously retrieves an reservation by its contact email.
@@ -28,7 +28,7 @@ namespace FlightManager.Services.Services.Interfaces
         /// <param name="contactEmail">The contact emial to retrieve. Must be an string. </param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the reservation with the specified
         /// contact emial, or null if no matching contact emial is found.</returns>
-        Task<Reservation?> GetreservationByContactEmailAsync(string contactEmail);
+        Task<Reservation?> GetReservationByContactEmailAsync(string contactEmail);
 
         /// <summary>
         /// Asynchronously creates a new reservation record using the specified reservation details.
